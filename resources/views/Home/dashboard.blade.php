@@ -12,7 +12,7 @@
         <div class="row">
             <div class="col-lg-5">
                 <div class="card mb-5">
-                    <div class="card-header text-white bg-dark">
+                    <div class="card-header text-bg-dark">
                         Keys Histroy
                     </div>
                     <div class="card-body">
@@ -41,7 +41,7 @@
             </div>
             <div class="col-lg-4">
                 <div class="card mb-5">
-                    <div class="card-header text-white bg-dark">
+                    <div class="card-header text-bg-dark">
                         Apps Histroy
                     </div>
                     <div class="card-body">
@@ -69,7 +69,7 @@
             </div>
             <div class="col-lg-3">
                 <div class="card mb-5">
-                    <div class="card-header text-white bg-dark">
+                    <div class="card-header text-bg-dark">
                         Information
                     </div>
                     <div class="card-body">

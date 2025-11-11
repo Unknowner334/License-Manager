@@ -11,7 +11,7 @@
                         <a class="nav-link text-white" href=""><i class="bi bi-key"></i> Keys</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href=""><i class="bi bi-terminal"></i> Apps</a>
+                        <a class="nav-link text-white" href={{ route('apps') }}><i class="bi bi-terminal"></i> Apps</a>
                     </li>
                 </ul>
                 <div class="float-right">

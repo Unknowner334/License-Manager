@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\AppController;
 
 // * Login
 Route::get('/login', [AuthController::class, 'LoginView'])->name('login');
@@ -23,6 +24,9 @@ Route::get('/settings', [SettingController::class, 'Settings'])->name('settings'
 Route::post('/settings/username-change', [SettingController::class, 'SettingsUsername'])->name('settings.username')->middleware('auth');
 Route::post('/settings/name-change', [SettingController::class, 'SettingsName'])->name('settings.name')->middleware('auth');
 Route::post('/settings/password-change', [SettingController::class, 'SettingsPassword'])->name('settings.password')->middleware('auth');
+
+// * Apps
+Route::get('/apps', [AppController::class, 'AppListView'])->name('apps')->middleware('auth');
 
 // ! Fallback
 Route::fallback(function () {return view('errors.fallback');});
