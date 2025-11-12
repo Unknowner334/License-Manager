@@ -40,7 +40,7 @@ class Key extends Model
     
     public function app()
     {
-        return $this->belongsTo(App::class, 'app_id', 'app_id');
+        return $this->belongsTo(App::class, 'app_id', 'edit_id');
     }
 
     /*public function histories()

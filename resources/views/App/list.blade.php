@@ -42,7 +42,7 @@
                                     <td><span class="align-middle badge text-dark fs-6">{{ $app->ppd_premium }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($app->created_at) }}</span></td>
                                     <td>
-                                        <a href={{ route('apps.edit', ['id' => $app->app_id]) }} class="btn btn-outline-dark">
+                                        <a href={{ route('apps.edit', ['id' => $app->edit_id]) }} class="btn btn-outline-dark">
                                             <i class="bi bi-person"></i>
                                         </a>
                                     </td>

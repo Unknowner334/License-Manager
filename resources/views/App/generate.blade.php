@@ -6,7 +6,7 @@
     <div class="col-lg-6">
         @include('Layout.msgStatus')
         <div class="card mb-5">
-            <div class="card-header text-bg-dark">
+            <div class="card-header text-bg-danger">
                 <div class="row">
                     <div class="col pt-1">
                         App Registering
@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="form-group">
-                        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#confirmGenerateModal">Generate</button>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmGenerateModal"><i class="bi bi-plus-square"></i> Generate</button>
                     </div>
                 </form>
             </div>
@@ -71,7 +71,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to generate app?
+                    Are you sure you want to generate the app?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

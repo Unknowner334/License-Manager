@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('apps', function (Blueprint $table) {
             $table->id();
-            $table->uuid('app_id');
+            $table->uuid('edit_id')->unique();
+            $table->uuid('app_id')->unique();
             $table->string('name')->unique();
             $table->integer('ppd_basic');
             $table->integer('ppd_premium');
