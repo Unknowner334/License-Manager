@@ -20,6 +20,14 @@ Route::post('/register', [AuthController::class, 'RegisterPost'])->name('registe
 Route::get('/', [DashController::class, 'Dashboard'])->middleware('auth');
 Route::get('/dashboard', [DashController::class, 'Dashboard'])->name('dashboard')->middleware('auth');
 
+// * Manage Users
+Route::get('/admin/users', [DashController::class, 'ManageUsers'])->name('admin.users')->middleware('auth');
+Route::get('/admin/users/{id}', [DashController::class, 'ManageUsersEditView'])->where('id', '[0-9a-fA-F-]{36}')->name('admin.users.edit')->middleware('auth');
+Route::get('/admin/users/generate', [DashController::class, 'ManageUsersGenerateView'])->name('admin.users.generate')->middleware('auth');
+Route::post('/admin/users', [DashController::class, 'ManageUsersEditPost'])->where('id', '[0-9a-fA-F-]{36}')->name('admin.users.edit.post')->middleware('auth');
+Route::post('/admin/users/generate', [DashController::class, 'ManageUsersGeneratePost'])->name('admin.users.generate.post')->middleware('auth');
+Route::post('/admin/users/delete', [DashController::class, 'ManageUsersDeletePost'])->name('admin.users.delete')->middleware('auth');
+
 // * Settings
 Route::get('/settings', [SettingController::class, 'Settings'])->name('settings')->middleware('auth');
 Route::post('/settings/username-change', [SettingController::class, 'SettingsUsername'])->name('settings.username')->middleware('auth');

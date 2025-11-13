@@ -25,7 +25,7 @@
                                 </li>
                                     <li class="dropdown-item text-muted">{{ auth()->user()->name }} ({{ auth()->user()->username }})</li>
                                     <li>
-                                        <a class="dropdown-item" href="">
+                                        <a class="dropdown-item" href={{ route('admin.users') }}>
                                             <i class="bi bi-person"></i> Manage Users
                                         </a>
                                     </li>

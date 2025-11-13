@@ -16,6 +16,16 @@ abstract class Controller
         }
     }
 
+    static function permissionColor($perm) {
+        if ($perm == 'Owner') {
+            return 'danger';
+        } elseif ($perm == 'Admin') {
+            return 'warning';
+        } else {
+            return 'dark';
+        }
+    }
+
     static function timeElapsed($dateString) {
         if (empty($dateString)) {
             return 'N/A';

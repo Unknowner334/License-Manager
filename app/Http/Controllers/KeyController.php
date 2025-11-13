@@ -232,4 +232,38 @@ class KeyController extends Controller
             return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
         }
     }
+
+    public function KeyDelete(Request $request) {
+        $successMessage = Config::get('messages.success.deleted');
+        $errorMessage = Config::get('messages.error.validation');
+
+        $request->validate([
+            'edit_id'  => 'required|string|min:6|max:36',
+        ]);
+
+        if (auth()->user()->permissions == "Owner") {
+            $key = Key::where('edit_id', $request->input('edit_id'))->first();
+
+            if (empty($key)) {
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
+            }
+        } else {
+            $key = Key::where('created_by', auth()->user()->username)->where('edit_id', $id)->first();
+
+            if (empty($key)) {
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
+            }
+        }
+
+        $keyName = $key->key;
+
+        try {
+            //$key->histories()->delete();
+            $key->delete();
+
+            return redirect()->route('keys')->with('msgSuccess', str_replace(':flag', "Key " . $keyName, $successMessage));
+        } catch (\Exception $e) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
+        }
+    }
 }
