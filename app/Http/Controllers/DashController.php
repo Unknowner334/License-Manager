@@ -177,4 +177,34 @@ class DashController extends Controller
             return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
         }
     }
+    
+    public function ManageUsersHistoryView() {
+        $errorMessage = Config::get('messages.error.validation');
+        $histories = UserHistory::orderBy('created_at', 'desc')->paginate(10);
+
+        if (!auth()->user()->permissions == "Owner") {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+        }
+
+        if (empty($histories)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+        }
+
+        return view('Home.history_user', compact('histories'));
+    }
+
+    public function ManageUsersHistoryUserView($id) {
+        $errorMessage = Config::get('messages.error.validation');
+        $histories = UserHistory::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);
+
+        if (!auth()->user()->permissions == "Owner") {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+        }
+
+        if (empty($histories)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+        }
+
+        return view('Home.history_user', compact('histories'));
+    }
 }

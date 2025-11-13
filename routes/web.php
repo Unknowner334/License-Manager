@@ -24,6 +24,8 @@ Route::get('/dashboard', [DashController::class, 'Dashboard'])->name('dashboard'
 Route::get('/admin/users', [DashController::class, 'ManageUsers'])->name('admin.users')->middleware('auth');
 Route::get('/admin/users/{id}', [DashController::class, 'ManageUsersEditView'])->where('id', '[0-9a-fA-F-]{36}')->name('admin.users.edit')->middleware('auth');
 Route::get('/admin/users/generate', [DashController::class, 'ManageUsersGenerateView'])->name('admin.users.generate')->middleware('auth');
+Route::get('/admin/users/history', [DashController::class, 'ManageUsersHistoryView'])->name('admin.users.history')->middleware('auth');
+Route::get('/admin/users/history/{id}', [DashController::class, 'ManageUsersHistoryUserView'])->where('id', '[0-9a-fA-F-]{36}')->name('admin.users.history.user')->middleware('auth');
 Route::post('/admin/users', [DashController::class, 'ManageUsersEditPost'])->where('id', '[0-9a-fA-F-]{36}')->name('admin.users.edit.post')->middleware('auth');
 Route::post('/admin/users/generate', [DashController::class, 'ManageUsersGeneratePost'])->name('admin.users.generate.post')->middleware('auth');
 Route::post('/admin/users/delete', [DashController::class, 'ManageUsersDeletePost'])->name('admin.users.delete')->middleware('auth');

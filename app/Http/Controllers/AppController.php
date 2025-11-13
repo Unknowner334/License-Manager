@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 class AppController extends Controller
 {
     public function AppListView() {
-        $apps = App::paginate(10);
+        $apps = App::orderBy('created_at', 'desc')->paginate(10);
         $currency = Config::get('messages.settings.currency');
 
         return view('App.list', compact('apps', 'currency'));

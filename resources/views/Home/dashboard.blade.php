@@ -21,7 +21,7 @@
                                 @if ($keys->isNotEmpty())
                                     @foreach ($keys as $key)
                                         <tr>
-                                            <td><span class="align-middle badge text-dark">{{ $loop->iteration }}</span></td>
+                                            <td><span class="align-middle badge text-dark">{{ ($keys->currentPage() - 1) * $keys->perPage() + $loop->iteration }}</span></td>
                                             <td><span class="align-middle badge text-{{ Controller::statusColor($key->app->status) }}">{{ $key->app->name }}</span></td>
                                             <td><span class="align-middle badge text-{{ Controller::statusColor($key->status) }}">{{ Controller::censorText($key->key) }}</span></td>
                                             <td><span class="align-middle badge text-dark">{{ $key->duration }} Days</span></td>
@@ -53,7 +53,7 @@
                                 @if ($apps->isNotEmpty())
                                     @foreach ($apps as $app)
                                         <tr>
-                                            <td><span class="align-middle badge text-dark">{{ $loop->iteration }}</span></td>
+                                            <td><span class="align-middle badge text-dark">{{ ($apps->currentPage() - 1) * $apps->perPage() + $loop->iteration }}</span></td>
                                             <td><span class="align-middle badge text-{{ Controller::statusColor($app->status) }}">{{ $app->name }}</span></td>
                                             <td><span class="align-middle badge text-dark">{{ number_format($app->ppd_basic) }}{{ $currency }}</span></td>
                                             <td><span class="align-middle badge text-dark">{{ number_format($app->ppd_premium) }}{{ $currency }}</span></td>

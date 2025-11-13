@@ -16,8 +16,8 @@
                         Users Registration
                     </div>
                     <div class="col text-end">
+                        <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.history') }}><i class="bi bi-person"></i> HISTORY</a>
                         <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.generate') }}><i class="bi bi-person"></i> USER</a>
-                        <a class="btn btn-outline-light btn-sm" href="{{ route('admin.users', ['page' => request()->get('page', 1)]) }}"><i class="bi bi-arrow-clockwise"></i> REFRESH</a>
                     </div>
                 </div>
             </div>

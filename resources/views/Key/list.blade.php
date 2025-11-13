@@ -18,7 +18,6 @@
                     </div>
                     <div class="col text-end">
                         <a class="btn btn-outline-light btn-sm" href={{ route('keys.generate') }}><i class="bi bi-key"></i> KEY</a>
-                        <a class="btn btn-outline-light btn-sm" href="{{ route('keys', ['page' => request()->get('page', 1)]) }}"><i class="bi bi-arrow-clockwise"></i> REFRESH</a>
                     </div>
                 </div>
             </div>
@@ -48,7 +47,7 @@
                                     }
                                 @endphp
                                 <tr>
-                                    <td><span class="align-middle badge text-dark fs-6">{{ $loop->iteration }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6">{{ ($keys->currentPage() - 1) * $keys->perPage() + $loop->iteration }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ $owner }}</span></td>
                                     <td><span class="align-middle badge text-{{ Controller::statusColor($key->app->status) }} fs-6">{{ $key->app->name ?? 'N/A' }}</span></td>
                                     <td><span class="align-middle badge text-{{ Controller::statusColor($key->status) }} fs-6 copy-trigger" data-copy="{{ $key->key }}">{{ Controller::censorText($key->key) ?? 'N/A'}}</span></td>
