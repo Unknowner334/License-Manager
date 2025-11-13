@@ -13,10 +13,10 @@ class KeyController extends Controller
 {
     static function keyPriceCalculator($rank, $basic, $premium, $devices, $duration) {
         $rank = (string) $rank;
-        $basic = (integer) $basic;
-        $premium = (integer) $premium;
-        $devices = (integer) $devices;
-        $duration = (integer) $duration;
+        $basic = (int) $basic;
+        $premium = (int) $premium;
+        $devices = (int) $devices;
+        $duration = (int) $duration;
 
         if ($rank == 'Basic' || $rank == 'basic') {
             $price = $basic;
@@ -43,24 +43,35 @@ class KeyController extends Controller
             return 'N/A';
         }
 
-        $remainingDays = now()->diffInDays($expire, false);
+        $remainingDays = now()->diffInDays($expire, false) + 1;
         return max(0, (int) $remainingDays);
     }
 
     static function RemainingDaysColor($remainingDays) {
-        if ($remainingDays <= 10) {
+        if ($remainingDays == "N/A") {
+            return "danger";
+        } elseif ($remainingDays <= 10) {
             return 'danger';
-        } else if ($remainingDays <= 20) {
+        } elseif ($remainingDays <= 20) {
             return 'warning';
-        } else if ($remainingDays <= 30) {
+        } elseif ($remainingDays <= 30) {
             return 'success';
         } else {
-            return 'danger';
+            return 'success';
+        }
+    }
+
+    static function RankColor($rank) {
+        if ($rank == "Basic" || $rank == "basic") {
+            return "success";
+        } elseif ($rank == "Premium" || $rank == "premium") {
+            return "warning";
+        } else {
+            return "danger";
         }
     }
 
     public function KeyListView() {
-        //$keys = Key::paginate(10);
         if (auth()->user()->permissions == "Owner") {
             $keys = Key::orderBy('created_at', 'desc')->paginate(10);
         } else {
@@ -97,12 +108,16 @@ class KeyController extends Controller
             $keyExists = Key::where('key', $key)->exists();
         } while ($keyExists);
 
+        $now = Carbon::now();
+        $expire_date = $now->addDays((int) $request->input('duration'));
+
         try {
             Key::create([
                 'app_id'      => $request->input('app'),
                 'owner'       => $request->input('owner') ?? "",
                 'rank'        => $request->input('rank'),
                 'duration'    => $request->input('duration'),
+                'expire_date' => $expire_date,
                 'key'         => $key,
                 'status'      => $request->input('status'),
                 'max_devices' => $request->input('devices'),
@@ -113,5 +128,28 @@ class KeyController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
         }
+    }
+
+    public function KeyEditView($id) {
+        $errorMessage = Config::get('messages.error.validation');
+
+        if (auth()->user()->permissions == "Owner") {
+            $key = Key::where('edit_id', $id)->first();
+
+            if (empty($key)) {
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
+            }
+        } else {
+            $key = Key::where('created_by', auth()->user()->username)->where('edit_id', $id)->first();
+
+            if (empty($key)) {
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
+            }
+        }
+
+        $apps = App::orderBy('created_at', 'desc')->get();
+        $currency = Config::get('messages.settings.currency');
+
+        return view('Key.edit', compact('key', 'apps', 'currency'));
     }
 }

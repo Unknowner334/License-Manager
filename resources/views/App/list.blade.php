@@ -44,7 +44,7 @@
                                 @endphp
                                 <tr>
                                     <td><span class="align-middle badge text-dark fs-6">{{ $loop->iteration }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6">{{ Controller::censorText($app->app_id) }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $app->app_id }}">{{ Controller::censorText($app->app_id) }}</span></td>
                                     <td><span class="align-middle badge text-{{ Controller::statusColor($app->status) }} fs-6">{{ $app->name }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ number_format($app->ppd_basic) }}{{ $currency }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ number_format($app->ppd_premium) }}{{ $currency }}</span></td>
@@ -71,4 +71,37 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function fallbackCopy(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    console.log(`Copied (fallback): ${text}`);
+                } catch (err) {
+                    console.error('Fallback copy failed:', err);
+                }
+                document.body.removeChild(textarea);
+            }
+
+            document.querySelectorAll('.copy-trigger').forEach(el => {
+                el.addEventListener('click', () => {
+                    const text = el.getAttribute('data-copy');
+                    if (!text) return;
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text)
+                            .then(() => console.log(`Copied: ${text}`))
+                            .catch(() => fallbackCopy(text));
+                    } else {
+                        fallbackCopy(text);
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

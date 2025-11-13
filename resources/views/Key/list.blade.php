@@ -18,7 +18,6 @@
                     </div>
                     <div class="col text-end">
                         <a class="btn btn-outline-light btn-sm" href={{ route('keys.generate') }}><i class="bi bi-key"></i> KEY</a>
-                        <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#PayoutsModal"><i class="bi bi-cash-coin"></i> Payouts</button>
                         <a class="btn btn-outline-light btn-sm" href="{{ route('keys', ['page' => request()->get('page', 1)]) }}"><i class="bi bi-arrow-clockwise"></i> REFRESH</a>
                     </div>
                 </div>
@@ -55,7 +54,7 @@
                                     <td><span class="align-middle badge text-{{ Controller::statusColor($key->status) }} fs-6 copy-trigger" data-copy="{{ $key->key }}">{{ Controller::censorText($key->key) ?? 'N/A'}}</span></td>
                                     <td><span class="align-middle badge text-{{ KeyController::RemainingDaysColor(KeyController::RemainingDays($key->expire_date)) }} fs-6">{{ KeyController::RemainingDays($key->expire_date) }}/{{ $key->duration ?? 'N/A' }} Days</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">0/{{ $key->max_devices ?? 'N/A' }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6">{{ $key->rank ?? 'N/A' }}</span></td>
+                                    <td><span class="align-middle badge text-{{ KeyController::RankColor($key->rank) }} fs-6">{{ $key->rank ?? 'N/A' }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($key->created_at) ?? 'N/A' }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ $key->created_by ?? 'N/A' }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ number_format(KeyController::keyPriceCalculator($key->rank, $key->app->ppd_basic, $key->app->ppd_premium, $key->max_devices, $key->duration)) }}{{ $currency }}</span></td>
@@ -76,35 +75,6 @@
 
                 <div class="d-flex justify-content-end">
                     {{ $keys->onEachSide(1)->links('pagination::bootstrap-5') }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="PayoutsModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-bg-dark">
-                    <h5 class="modal-title">Payouts</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    @php
-                        $monthly = 0;
-
-                        foreach($fullKeys as $key) {
-                            $monthly += KeyController::keyPriceCalculator($key->rank, $key->app->ppd_basic, $key->app->ppd_premium, $key->max_devices, $key->duration);
-                        }
-
-                        $monthlyFormatted = number_format($monthly);
-                        $yearlyFormatted = number_format($monthly * 12);
-                    @endphp
-                    All the keys gets you<br>
-                    Monthly {{ $monthlyFormatted }} IQD<br>
-                    Yearly {{ $yearlyFormatted }} IQD
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Okay</button>
                 </div>
             </div>
         </div>

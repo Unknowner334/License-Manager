@@ -56,7 +56,12 @@ class AppController extends Controller
     }
 
     public function AppEditView($id) {
-        $app = App::where('edit_id', $id)->firstOrFail();
+        $errorMessage = Config::get('messages.error.validation');
+        $app = App::where('edit_id', $id)->first();
+
+        if (empty($app)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
+        }
 
         return view('App.edit', compact('app'));
     }
@@ -73,7 +78,11 @@ class AppController extends Controller
             'edit_id' => 'required|string|min:10|max:36',
         ]);
 
-        $app = App::where('edit_id', $request->input('edit_id'))->firstOrFail();
+        $app = App::where('edit_id', $request->input('edit_id'))->first();
+
+        if (empty($app)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
+        }
 
         $request->validate([
             'id'      => [
