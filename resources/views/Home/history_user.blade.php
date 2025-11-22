@@ -28,6 +28,7 @@
                             <th><span class="align-middle badge text-dark fs-6">User ID</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Username</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Status</span></th>
+                            <th><span class="align-middle badge text-dark fs-6">Type</span></th>
                             <th><span class="align-middle badge text-dark fs-6">IP Address</span></th>
                             <th><span class="align-middle badge text-dark fs-6">User Agent</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Payload</span></th>
@@ -45,12 +46,13 @@
                                 <tr>
                                     <td><span class="align-middle badge text-dark fs-6">{{ ($histories->currentPage() - 1) * $histories->perPage() + $loop->iteration }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->user_id }}">{{ $user_id }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->username }}">{{ $history->username }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->username }}">{{ Controller::censorText($history->username, 2) }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ $history->status }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6">{{ $history->type }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->ip_address }}">{{ $history->ip_address }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->user_agent }}">{{ Controller::censorText($history->user_agent, 20) }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->payload }}">{{ Controller::censorText($history->payload, 15) }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($history->created_at) . ', ' . $history->created_at }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->user_agent }}">{{ Controller::censorText($history->user_agent, 10) }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->payload }}">{{ Controller::censorText($history->payload, 10) }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($history->created_at) }}</span></td>
                                 </tr>
                             @endforeach
                         @else

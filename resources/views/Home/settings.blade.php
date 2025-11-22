@@ -8,8 +8,8 @@
         <div class="row">
             <div class="col-lg-4">
                 <div class="card mb-5">
-                    <div class="card-header text-white bg-danger">
-                        Change Username
+                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0">Change Username</span>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -35,8 +35,8 @@
             </div>
             <div class="col-lg-4">
                 <div class="card mb-5">
-                    <div class="card-header text-white bg-dark">
-                        Change Name
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0">Change Name</span>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -62,8 +62,8 @@
             </div>
             <div class="col-lg-4">
                 <div class="card mb-5">
-                    <div class="card-header text-white bg-danger">
-                        Change Password
+                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0">Change Password</span>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

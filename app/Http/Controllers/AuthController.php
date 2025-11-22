@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
 use App\Models\UserHistory;
+use App\Models\Reff;
 
 class AuthController extends Controller
 {
@@ -33,7 +34,8 @@ class AuthController extends Controller
         $userAgent = $request->header('User-Agent');
         $payload = $request->all();
         $username = $request->input('username');
-        $user_id = User::where('username', $request->input('username'))->first()->user_id ?? NULL;
+        $userRecord = User::where('username', $request->input('username'))->first();
+        $user_id = $userRecord ? $userRecord->user_id : null;
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
@@ -67,6 +69,20 @@ class AuthController extends Controller
     }
     
     public function Logout(Request $request) {
+        $ip = $request->ip();
+        $userAgent = $request->header('User-Agent');
+        $payload = $request->all();
+        $username = auth()->user()->username;
+        $user_id = auth()->user()->user_id;
+        UserHistory::create([
+            'user_id'    => $user_id,
+            'username'   => $username,
+            'status'     => 'Success',
+            'type'       => 'Logout',
+            'ip_address' => $ip,
+            'user_agent' => $userAgent,
+            'payload'    => json_encode($payload),
+        ]);
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -92,7 +108,7 @@ class AuthController extends Controller
 
         $referrable = $request->input('reff');
 
-        $reff = Reff::where('code', $referrable)->first();
+        $reff = Reff::where('code', $referrable)->where('status', 'Active')->first();
 
         if (!$reff) {
             return back()->withErrors([
@@ -103,14 +119,14 @@ class AuthController extends Controller
         $name = $request->input('name');
         $username = $request->input('username');
         $password = $request->input('password');
-        $reffCode = $reff->code;
+        $reff = $reff->edit_id;
 
         try {
             User::create([
                 'name'     => $name,
                 'username' => $username,
                 'password' => $password,
-                'reff'     => $reffCode,
+                'reff'     => $reff,
             ]);
             return redirect()->intended('register')
                 ->with('msgSuccess', $successMessage);

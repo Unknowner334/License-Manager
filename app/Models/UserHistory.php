@@ -13,6 +13,7 @@ class UserHistory extends Model
         'user_id',
         'username',
         'status',
+        'type',
         'ip_address',
         'user_agent',
         'payload',

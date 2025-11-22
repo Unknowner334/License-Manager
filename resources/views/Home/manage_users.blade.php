@@ -10,15 +10,15 @@
     <div class="col-lg-12">
         @include('Layout.msgStatus')
         <div class="card mb-5">
-            <div class="card-header text-bg-dark">
-                <div class="row">
-                    <div class="col pt-1">
-                        Users Registration
-                    </div>
-                    <div class="col text-end">
-                        <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.history') }}><i class="bi bi-person"></i> HISTORY</a>
-                        <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.generate') }}><i class="bi bi-person"></i> USER</a>
-                    </div>
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span class="h6 mb-0">Users Registration</span>
+                <div class="d-flex align-items-center gap-2">
+                    <form action="{{ route('admin.users') }}" method="get" class="d-flex align-items-center gap-1 mb-0">
+                        <input type="text" name="search" class="form-control form-control-sm" placeholder="Search User">
+                        <button type="submit" class="btn btn-outline-light btn-sm">Go</button>
+                    </form>
+                    <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.history') }}><i class="bi bi-person"></i> HISTORY</a>
+                    <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.generate') }}><i class="bi bi-person"></i> USER</a>
                 </div>
             </div>
             <div class="card-body">
@@ -37,12 +37,21 @@
                         </tr>
                         @if ($users->isNotEmpty())
                             @foreach ($users as $user)
+                                @php
+                                    if ($user->referrable != NULL) {
+                                        $reff_status = Controller::statusColor($user->referrable->status);
+                                        $reff_code = Controller::censorText($user->referrable->code);
+                                    } else {
+                                        $reff_status = 'dark';
+                                        $reff_code = NULL;
+                                    }
+                                @endphp
                                 <tr>
                                     <td><span class="align-middle badge text-dark fs-6">{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</span></td>
                                     <td><span class="align-middle badge text-{{ Controller::statusColor($user->status) }} fs-6">{{ $user->name }}</span></td>
                                     <td><span class="align-middle badge text-{{ Controller::statusColor($user->status) }} fs-6 copy-trigger" data-copy="{{ $user->username }}">{{ Controller::censorText($user->username, 2) }}</span></td>
                                     <td><span class="align-middle badge text-{{ Controller::permissionColor($user->permissions) }} fs-6">{{ $user->permissions }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6">{{ $user->reff ?? "N/A" }}</span></td>
+                                    <td><span class="align-middle badge text-{{ $reff_status }} fs-6">{{ $reff_code ?? "N/A" }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($user->last_login) ?? "N/A" }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ $user->created_by ?? "N/A" }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($user->created_at) ?? "N/A" }}</span></td>

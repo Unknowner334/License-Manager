@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use App\Models\User;
 
 class Reff extends Model
 {
@@ -27,5 +29,13 @@ class Reff extends Model
                 $reff->edit_id = (string) Str::uuid();
             }
         });
+
+        static::deleting(function ($reff) {
+            $reff->users()->delete();
+        });
+    }
+
+    public function users() {
+        return $this->hasMany(User::class, 'reff', 'edit_id');
     }
 }

@@ -79,14 +79,24 @@ class KeyController extends Controller
         return $key->histories->where('status', 'Success')->unique('serial_number')->count();
     }
 
+    public function KeyListView(Request $request) {
+        if ($request->get('search')) {
+            if (auth()->user()->permissions == "Owner") {
+                $keys = Key::where('key', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
+            } else {
+                $keys = Key::where('created_by', auth()->user()->username)->where('key', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
+            }
 
-    public function KeyListView() {
-        if (auth()->user()->permissions == "Owner") {
-            $keys = Key::orderBy('created_at', 'desc')->paginate(10);
+            $fullKeys = Key::where('key', $request->get('search'))->orderBy('created_at', 'desc')->get();
         } else {
-            $keys = Key::where('created_by', auth()->user()->username)->orderBy('created_at', 'desc')->paginate(10);
+            if (auth()->user()->permissions == "Owner") {
+                $keys = Key::orderBy('created_at', 'desc')->paginate(10);
+            } else {
+                $keys = Key::where('created_by', auth()->user()->username)->orderBy('created_at', 'desc')->paginate(10);
+            }
+
+            $fullKeys = Key::orderBy('created_at', 'desc')->get();
         }
-        $fullKeys = Key::orderBy('created_at', 'desc')->get();
         $currency = Config::get('messages.settings.currency');
 
         return view('Key.list', compact('keys', 'fullKeys', 'currency'));
@@ -354,7 +364,6 @@ class KeyController extends Controller
         $keyName = $key->key;
 
         try {
-            $key->histories()->delete();
             $key->delete();
 
             return redirect()->route('keys')->with('msgSuccess', str_replace(':flag', "Key " . $keyName, $successMessage));

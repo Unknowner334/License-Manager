@@ -32,8 +32,8 @@ abstract class Controller
         }
 
         try {
-            $date = new DateTime(substr($dateString, 0, 10));
-            $now = new DateTime(date('Y-m-d'));
+            $date = new DateTime($dateString);
+            $now = new DateTime();
             $diff = $now->diff($date);
 
             $parts = [];
@@ -47,19 +47,23 @@ abstract class Controller
             }
 
             if ($diff->d > 0) {
-                if ($diff->d == 1) {
-                    $parts[] = '1 day';
-                } else {
-                    $parts[] = $diff->d . ' days';
-                }
+                $parts[] = $diff->d . ' day' . ($diff->d > 1 ? 's' : '');
+            }
+
+            if ($diff->h > 0) {
+                $parts[] = $diff->h . ' hour' . ($diff->h > 1 ? 's' : '');
+            }
+
+            if ($diff->i > 0) {
+                $parts[] = $diff->i . ' minute' . ($diff->i > 1 ? 's' : '');
+            }
+
+            if ($diff->s > 0) {
+                $parts[] = $diff->s . ' second' . ($diff->s > 1 ? 's' : '');
             }
 
             if (empty($parts)) {
-                return 'Today';
-            }
-
-            if ($diff->d == 1) {
-                return 'Yesterday';
+                return 'N/A';
             }
 
             return implode(', ', $parts) . ' ago';

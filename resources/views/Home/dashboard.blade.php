@@ -12,8 +12,8 @@
         <div class="row">
             <div class="col-lg-5">
                 <div class="card mb-5">
-                    <div class="card-header text-bg-dark">
-                        Keys Registration
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0">Keys Registration</span>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -44,8 +44,8 @@
             </div>
             <div class="col-lg-4">
                 <div class="card mb-5">
-                    <div class="card-header text-bg-dark">
-                        Apps Registration
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0">Apps Registration</span>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -76,8 +76,8 @@
             </div>
             <div class="col-lg-3">
                 <div class="card mb-5">
-                    <div class="card-header text-bg-dark">
-                        Information
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0">Information</span>
                     </div>
                     <div class="card-body">
                         <ul class="list-group list-hover mb-3">

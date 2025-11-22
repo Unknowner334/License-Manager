@@ -8,10 +8,18 @@ use App\Models\Key;
 use App\Models\App;
 use App\Models\User;
 use App\Models\UserHistory;
+use App\Models\Reff;
 use Illuminate\Validation\Rule;
 
 class DashController extends Controller
 {
+    static function UsersCreated($edit_id) {
+        $reff = Reff::where('edit_id', $edit_id)->first();
+        if (!$reff) return "N/A";
+
+        return $reff->users->count();
+    }
+
     public function Dashboard() {
         if (auth()->user()->permissions == "Owner") {
             $keys = Key::orderBy('created_at', 'desc')->paginate(5, ['*'], 'keys_page');
@@ -24,9 +32,13 @@ class DashController extends Controller
         return view('Home.dashboard', compact('keys', 'apps', 'currency'));
     }
 
-    public function ManageUsers() {
+    public function ManageUsers(Request $request) {
         $errorMessage = Config::get('messages.error.validation');
-        $users = User::orderBy('created_at', 'desc')->paginate(10);
+        if ($request->get('search')) {
+            $users = User::where('username', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
+        } else {
+            $users = User::orderBy('created_at', 'desc')->paginate(10);
+        }
 
         if (auth()->user()->permissions == "Owner") {
             return view('Home.manage_users', compact('users'));
@@ -169,7 +181,6 @@ class DashController extends Controller
         $username = $user->username;
 
         try {
-            $user->histories()->delete();
             $user->delete();
 
             return redirect()->route('admin.users')->with('msgSuccess', str_replace(':flag', "User " . $username, $successMessage));
@@ -206,5 +217,164 @@ class DashController extends Controller
         }
 
         return view('Home.history_user', compact('histories'));
+    }
+
+    public function ManageReferrable() {
+        $errorMessage = Config::get('messages.error.validation');
+        $reffs = Reff::orderBy('created_at', 'desc')->paginate(10);
+
+        if (auth()->user()->permissions == "Owner") {
+            return view('Home.manage_reff', compact('reffs'));
+        }
+
+        return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+    }
+
+    public function ManageReferrableGenerateView() {
+        $errorMessage = Config::get('messages.error.validation');
+
+        if (auth()->user()->permissions == "Owner") {
+            return view('Home.generate_reff');
+        }
+
+        return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+    }
+
+    public function ManageReferrableGeneratePost(Request $request) {
+        $successMessage = Config::get('messages.success.created');
+        $errorMessage = Config::get('messages.error.validation');
+
+        if (!auth()->user()->permissions == "Owner") {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+        }
+
+        $request->validate([
+            'status'   => 'required|in:Active,Inactive',
+        ]);
+
+        if ($request->input('code') == '') {
+            do {
+                $code = parent::randomString(16);
+                $codeExists = Reff::where('code', $code)->exists();
+            } while ($codeExists);
+        } else {
+            $code = $request->input('code');
+
+            $request->validate([
+                'code' => [
+                    'required',
+                    'string',
+                    'min:4',
+                    'max:50',
+                    Rule::unique('referrable_codes', 'code')
+                ],
+            ]);
+        }
+
+        try {
+            Reff::create([
+                'code'        => $code,
+                'status'      => $request->input('status'),
+                'created_by'  => auth()->user()->username,
+            ]);
+
+            return redirect()->route('admin.referrable.generate')->with('msgSuccess', str_replace(':flag', "Reff " . $code, $successMessage));
+        } catch (\Exception $e) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+        }
+    }
+
+    public function ManageReferrableEditView($id) {
+        $errorMessage = Config::get('messages.error.validation');
+        $reff = Reff::where('edit_id', $id)->first();
+
+        if (empty($reff)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+        }
+
+        if (auth()->user()->permissions == "Owner") {
+            return view('Home.edit_reff', compact('reff'));
+        }
+
+        return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+    }
+
+    public function ManageReferrableEditPost(Request $request) {
+        $successMessage = Config::get('messages.success.updated');
+        $errorMessage = Config::get('messages.error.validation');
+
+        if (!auth()->user()->permissions == "Owner") {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+        }
+
+        $request->validate([
+            'edit_id'  => 'required|string|min:4|max:36|exists:referrable_codes,edit_id',
+            'status'   => 'required|in:Active,Inactive',
+        ]);
+
+        $reff = Reff::where('edit_id', $request->input('edit_id'))->first();
+
+        if (empty($reff)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
+        }
+
+        if ($request->input('code') == '') {
+            do {
+                $code = parent::randomString(16);
+                $codeExists = Reff::where('code', $code)->exists();
+            } while ($codeExists);
+        } else {
+            $code = $request->input('code');
+
+            $request->validate([
+                'code' => [
+                    'required',
+                    'string',
+                    'min:4',
+                    'max:50',
+                    Rule::unique('referrable_codes', 'code')->ignore($reff->edit_id, 'edit_id')
+                ],
+            ]);
+        }
+
+        try {
+            $reff->update([
+                'code'   => $code,
+                'status' => $request->input('status'),
+            ]);
+
+            return redirect()->route('admin.referrable.edit', $request->input('edit_id'))->with('msgSuccess', str_replace(':flag', "Reff " . $code, $successMessage));
+        } catch (\Exception $e) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+        }
+    }
+
+    public function ManageReferrableDeletePost(Request $request) {
+        $successMessage = Config::get('messages.success.deleted');
+        $errorMessage = Config::get('messages.error.validation');
+
+        if (!auth()->user()->permissions == "Owner") {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+        }
+
+        $request->validate([
+            'edit_id'  => 'required|string|min:4|max:36|exists:referrable_codes,edit_id',
+        ]);
+
+        $reff = Reff::where('edit_id', $request->input('edit_id'))->first();
+
+        if (empty($reff)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
+        }
+
+        $code = $reff->code;
+
+        try {
+            $reff->delete();
+
+            return redirect()->route('admin.referrable')->with('msgSuccess', str_replace(':flag', "Reff " . $code, $successMessage));
+        } catch (\Exception $e) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+        }
     }
 }

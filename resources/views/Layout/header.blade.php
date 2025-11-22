@@ -30,8 +30,8 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="">
-                                            <i class="bi bi-person"></i> Manage Referrable Code
+                                        <a class="dropdown-item" href={{ route('admin.referrable') }}>
+                                            <i class="bi bi-person-add"></i> Manage Referrable Code
                                         </a>
                                     </li>
                                     <li>

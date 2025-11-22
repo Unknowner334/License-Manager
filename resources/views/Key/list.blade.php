@@ -11,14 +11,14 @@
     <div class="col-lg-12">
         @include('Layout.msgStatus')
         <div class="card mb-5">
-            <div class="card-header text-bg-dark">
-                <div class="row">
-                    <div class="col pt-1">
-                        Keys Registration
-                    </div>
-                    <div class="col text-end">
-                        <a class="btn btn-outline-light btn-sm" href={{ route('keys.generate') }}><i class="bi bi-key"></i> KEY</a>
-                    </div>
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span class="h6 mb-0">Keys Registration</span>
+                <div class="d-flex align-items-center gap-2">
+                    <form action="{{ route('keys') }}" method="get" class="d-flex align-items-center gap-1 mb-0">
+                        <input type="text" name="search" class="form-control form-control-sm" placeholder="Search Key">
+                        <button type="submit" class="btn btn-outline-light btn-sm">Go</button>
+                    </form>
+                    <a href="{{ route('keys.generate') }}" class="btn btn-outline-light btn-sm"><i class="bi bi-key"></i> KEY</a>
                 </div>
             </div>
             <div class="card-body">

@@ -37,6 +37,7 @@ return new class extends Migration
             $table->string('user_id')->nullable();
             $table->string('username')->max(50);
             $table->enum('status', ['Success', 'Fail'])->default('Success');
+            $table->enum('type', ['Login', 'Logout'])->default('Login');
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');

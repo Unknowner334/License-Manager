@@ -13,19 +13,15 @@
     <div class="col-lg-12">
         @include('Layout.msgStatus')
         <div class="card mb-5">
-            <div class="card-header text-bg-dark">
-                <div class="row">
-                    <div class="col pt-1">
-                        Keys History
-                    </div>
-                    <div class="col text-end">
-                        <a class="btn btn-outline-light btn-sm" href={{ route('keys') }}><i class="bi bi-key"></i> BACK</a>
-                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="bi bi-trash3"></i> DELETE ALL</button>
-                        <form action={{ route('keys.history.delete.all') }} method="post" id="deleteForm">
-                            @csrf
-                            <input type="hidden" name="id" id="id" value="{{ $id }}">
-                        </form>
-                    </div>
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span class="h6 mb-0">Keys History</span>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-outline-light btn-sm" href={{ route('keys') }}><i class="bi bi-key"></i> BACK</a>
+                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="bi bi-trash3"></i> DELETE ALL</button>
+                    <form action={{ route('keys.history.delete.all') }} method="post" id="deleteForm">
+                        @csrf
+                        <input type="hidden" name="id" id="id" value="{{ $id }}">
+                    </form>
                 </div>
             </div>
             <div class="card-body">

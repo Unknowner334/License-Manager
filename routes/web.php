@@ -31,6 +31,14 @@ Route::post('/admin/users', [DashController::class, 'ManageUsersEditPost'])->whe
 Route::post('/admin/users/generate', [DashController::class, 'ManageUsersGeneratePost'])->name('admin.users.generate.post')->middleware('auth');
 Route::post('/admin/users/delete', [DashController::class, 'ManageUsersDeletePost'])->name('admin.users.delete')->middleware('auth');
 
+// * Manage Referrable Codes
+Route::get('/admin/referrables', [DashController::class, 'ManageReferrable'])->name('admin.referrable')->middleware('auth');
+Route::get('/admin/referrables/{id}', [DashController::class, 'ManageReferrableEditView'])->where('id', '[0-9a-fA-F-]{36}')->name('admin.referrable.edit')->middleware('auth');
+Route::get('/admin/referrables/generate', [DashController::class, 'ManageReferrableGenerateView'])->name('admin.referrable.generate')->middleware('auth');
+Route::post('/admin/referrables/update', [DashController::class, 'ManageReferrableEditPost'])->name('admin.referrable.edit.post')->middleware('auth');
+Route::post('/admin/referrables/generate', [DashController::class, 'ManageReferrableGeneratePost'])->name('admin.referrable.generate.post')->middleware('auth');
+Route::post('/admin/referrables/delete', [DashController::class, 'ManageReferrableDeletePost'])->name('admin.referrable.delete')->middleware('auth');
+
 // * API
 Route::get('/API/connect', [ApiController::class, 'ApiConnect'])->name('api.connect');
 

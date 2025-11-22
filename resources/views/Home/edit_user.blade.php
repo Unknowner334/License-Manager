@@ -6,14 +6,10 @@
     <div class="col-lg-6">
         @include('Layout.msgStatus')
         <div class="card mb-5">
-            <div class="card-header text-bg-danger">
-                <div class="row">
-                    <div class="col pt-1">
-                        User Updating
-                    </div>
-                    <div class="col text-end">
-                        <a class="btn btn-outline-light btn-sm" href={{ route('admin.users') }}><i class="bi bi-key"></i> BACK</a>
-                    </div>
+            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <span class="h6 mb-0">Users Editing</span>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-outline-light btn-sm" href={{ route('admin.users') }}><i class="bi bi-person"></i> BACK</a>
                 </div>
             </div>
             <div class="card-body">

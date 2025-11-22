@@ -6,8 +6,8 @@
     <div class="col-lg-3 col-md-4 col-sm-5">
         @include('Layout.msgStatus')
         <div class="card shadow-sm mb-5">
-            <div class="card-header text-bg-dark">
-                Login
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span class="h6 mb-0">Login</span>
             </div>
             <div class="card-body">
                 <form action="{{ route('login.post') }}" method="post">
