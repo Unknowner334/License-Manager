@@ -11,15 +11,16 @@ class Reff extends Model
     protected $table = 'referrable_codes';
 
     protected $fillable = [
-        'edit_id',
+        'created_at',
+        'updated_at',
         'code',
         'status',
         'created_by',
     ];
 
     protected $hidden = [
-        'created_at',
-        'updated_at',
+        'edit_id',
+        'id',
     ];
 
     protected static function booted()

@@ -11,17 +11,18 @@ class App extends Model
     protected $table = 'apps';
 
     protected $fillable = [
-        'edit_id',
         'app_id',
         'name',
         'ppd_basic',
         'ppd_premium',
         'status',
+        'created_by',
         'created_at',
         'updated_at',
     ];
 
     protected $hidden = [
+        'edit_id',
         'id',
     ];
 

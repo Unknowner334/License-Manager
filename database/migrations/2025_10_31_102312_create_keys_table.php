@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('ppd_basic');
             $table->integer('ppd_premium');
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
+            $table->string('created_by')->nullable();
             $table->timestamps();
         });
 

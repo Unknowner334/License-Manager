@@ -53,7 +53,7 @@
                                     <td><span class="align-middle badge text-{{ Controller::permissionColor($user->permissions) }} fs-6">{{ $user->permissions }}</span></td>
                                     <td><span class="align-middle badge text-{{ $reff_status }} fs-6">{{ $reff_code ?? "N/A" }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($user->last_login) ?? "N/A" }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6">{{ $user->created_by ?? "N/A" }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6">{{ Controller::userUsername($user->created_by) }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($user->created_at) ?? "N/A" }}</span></td>
                                     <td>
                                         <a href={{ route('admin.users.edit', ['id' => $user->user_id]) }} class="btn btn-outline-dark">

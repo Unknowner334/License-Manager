@@ -51,6 +51,7 @@ class AppController extends Controller
                 'ppd_basic'   => $request->input('basic'),
                 'ppd_premium' => $request->input('premium'),
                 'status'      => $request->input('status'),
+                'created_by'  => auth()->user()->user_id,
             ]);
 
             return redirect()->route('apps.generate')->with('msgSuccess', str_replace(':flag', "App " . $request->input('name'), $successMessage));
@@ -180,7 +181,7 @@ class AppController extends Controller
         try {
             $app = App::where('edit_id', $request->input('edit_id'))->firstOrFail();
             $name = $app->name;
-            $app->keys()->where('created_by', auth()->user()->username)->delete();
+            $app->keys()->where('created_by', auth()->user()->user_id)->delete();
 
             return redirect()->route('apps')->with('msgSuccess', str_replace(':flag', "App " . $name . "'s Keys", $successMessage));
         } catch (\Exception $e) {

@@ -7,7 +7,7 @@
 @endphp
 
 @section('content')
-    <div class="col-lg-10">
+    <div class="col-lg-12">
         @include('Layout.msgStatus')
         <div class="card mb-5">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
@@ -30,6 +30,7 @@
                             <th><span class="align-middle badge text-dark fs-6">Basic</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Premium</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Created</span></th>
+                            <th><span class="align-middle badge text-dark fs-6">Created By</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Keys Count</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Action</span></th>
                         </tr>
@@ -49,6 +50,7 @@
                                     <td><span class="align-middle badge text-dark fs-6">{{ number_format($app->ppd_basic) }}{{ $currency }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ number_format($app->ppd_premium) }}{{ $currency }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($app->created_at) }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6">{{ Controller::userUsername($app->created_by) }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ number_format($keysCount) }}</span></td>
                                     <td>
                                         <a href={{ route('apps.edit', ['id' => $app->edit_id]) }} class="btn btn-outline-dark">

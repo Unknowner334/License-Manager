@@ -84,7 +84,7 @@ class KeyController extends Controller
             if (auth()->user()->permissions == "Owner") {
                 $keys = Key::where('key', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
             } else {
-                $keys = Key::where('created_by', auth()->user()->username)->where('key', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
+                $keys = Key::where('created_by', auth()->user()->user_id)->where('key', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
             }
 
             $fullKeys = Key::where('key', $request->get('search'))->orderBy('created_at', 'desc')->get();
@@ -92,7 +92,7 @@ class KeyController extends Controller
             if (auth()->user()->permissions == "Owner") {
                 $keys = Key::orderBy('created_at', 'desc')->paginate(10);
             } else {
-                $keys = Key::where('created_by', auth()->user()->username)->orderBy('created_at', 'desc')->paginate(10);
+                $keys = Key::where('created_by', auth()->user()->user_id)->orderBy('created_at', 'desc')->paginate(10);
             }
 
             $fullKeys = Key::orderBy('created_at', 'desc')->get();
@@ -140,7 +140,7 @@ class KeyController extends Controller
                 'key'         => $key,
                 'status'      => $request->input('status'),
                 'max_devices' => $request->input('devices'),
-                'created_by'  => auth()->user()->username,
+                'created_by'  => auth()->user()->user_id,
             ]);
 
             return redirect()->route('keys.generate')->with('msgSuccess', str_replace(':flag', "Key " . $key, $successMessage));
@@ -159,7 +159,7 @@ class KeyController extends Controller
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
             }
         } else {
-            $key = Key::where('created_by', auth()->user()->username)->where('edit_id', $id)->first();
+            $key = Key::where('created_by', auth()->user()->user_id)->where('edit_id', $id)->first();
 
             if (empty($key)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
@@ -194,7 +194,7 @@ class KeyController extends Controller
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
             }
         } else {
-            $key = Key::where('created_by', auth()->user()->username)->where('edit_id', $id)->first();
+            $key = Key::where('created_by', auth()->user()->user_id)->where('edit_id', $id)->first();
 
             if (empty($key)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
@@ -262,7 +262,7 @@ class KeyController extends Controller
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
             }
         } else {
-            $keyHistory = Key::where('created_by', auth()->user()->username)->where('edit_id', $id)->first()->histories()->paginate(10);
+            $keyHistory = Key::where('created_by', auth()->user()->user_id)->where('edit_id', $id)->first()->histories()->paginate(10);
 
             if (empty($keyHistory)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
@@ -288,7 +288,7 @@ class KeyController extends Controller
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
             }
         } else {
-            $key = Key::where('created_by', auth()->user()->username)->where('key_id', $id)->first();
+            $key = Key::where('created_by', auth()->user()->user_id)->where('key_id', $id)->first();
 
             if (empty($key)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
@@ -321,7 +321,7 @@ class KeyController extends Controller
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
             }
         } else {
-            $key = Key::where('created_by', auth()->user()->username)->where('id', $id)->first();
+            $key = Key::where('created_by', auth()->user()->user_id)->where('id', $id)->first();
 
             if (empty($key)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
@@ -354,7 +354,7 @@ class KeyController extends Controller
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
             }
         } else {
-            $key = Key::where('created_by', auth()->user()->username)->where('edit_id', $id)->first();
+            $key = Key::where('created_by', auth()->user()->user_id)->where('edit_id', $id)->first();
 
             if (empty($key)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');

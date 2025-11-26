@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DateTime;
+use app\Models\User;
 
 abstract class Controller
 {
@@ -80,5 +81,10 @@ abstract class Controller
             $randomString .= $characters[$index];
         }
         return $randomString;
+    }
+
+    static function userUsername($user_id) {
+        $user = User::where('user_id', $user_id)->first();
+        return $user?->username ?? 'N/A';
     }
 }

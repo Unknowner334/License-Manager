@@ -24,7 +24,7 @@ class DashController extends Controller
         if (auth()->user()->permissions == "Owner") {
             $keys = Key::orderBy('created_at', 'desc')->paginate(5, ['*'], 'keys_page');
         } else {
-            $keys = Key::where('created_by', auth()->user()->username)->orderBy('created_at', 'desc')->paginate(10, ['*'], 'keys_page');
+            $keys = Key::where('created_by', auth()->user()->user_id)->orderBy('created_at', 'desc')->paginate(10, ['*'], 'keys_page');
         }
         $apps = App::orderBy('created_at', 'desc')->paginate(5, ['*'], 'apps_page');
         $currency = Config::get('messages.settings.currency');
@@ -82,7 +82,7 @@ class DashController extends Controller
                 'password'    => $request->input('password'),
                 'status'      => $request->input('status'),
                 'permissions' => $request->input('perm'),
-                'created_by'  => auth()->user()->username,
+                'created_by'  => auth()->user()->user_id,
             ]);
 
             return redirect()->route('admin.users.generate')->with('msgSuccess', str_replace(':flag', "User " . $username, $successMessage));
@@ -275,7 +275,7 @@ class DashController extends Controller
             Reff::create([
                 'code'        => $code,
                 'status'      => $request->input('status'),
-                'created_by'  => auth()->user()->username,
+                'created_by'  => auth()->user()->user_id,
             ]);
 
             return redirect()->route('admin.referrable.generate')->with('msgSuccess', str_replace(':flag', "Reff " . $code, $successMessage));

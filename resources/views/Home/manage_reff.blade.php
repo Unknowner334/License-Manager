@@ -38,7 +38,7 @@
                                     <td><span class="align-middle badge text-{{ Controller::statusColor($reff->status) }} fs-6 copy-trigger" data-copy="{{ $reff->code }}">{{ Controller::censorText($reff->code) }}</span></td>
                                     <td><span class="align-middle badge text-{{ Controller::statusColor($reff->status) }} fs-6">{{ $reff->status ?? "N/A" }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ DashController::UsersCreated($reff->edit_id) }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6">{{ $reff->created_by ?? "N/A" }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6">{{ Controller::userUsername($reff->created_by) }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($reff->created_at) ?? "N/A" }}</span></td>
                                     <td>
                                         <a href={{ route('admin.referrable.edit', ['id' => $reff->edit_id]) }} class="btn btn-outline-dark">

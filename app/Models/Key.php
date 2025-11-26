@@ -12,7 +12,6 @@ class Key extends Model
     protected $table = 'key_codes';
 
     protected $fillable = [
-        'edit_id',
         'app_id',
         'owner',
         'key',
@@ -22,11 +21,13 @@ class Key extends Model
         'expire_date',
         'rank',
         'created_by',
+        'created_at',
+        'updated_at',
     ];
 
     protected $hidden = [
-        'created_at',
-        'updated_at',
+        'edit_id',
+        'id',
     ];
 
     protected static function booted()

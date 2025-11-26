@@ -55,7 +55,7 @@
                                     <td><span class="align-middle badge text-dark fs-6">{{ KeyController::DevicesHooked($key->edit_id) }}/{{ $key->max_devices ?? 'N/A' }}</span></td>
                                     <td><span class="align-middle badge text-{{ KeyController::RankColor($key->rank) }} fs-6">{{ $key->rank ?? 'N/A' }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($key->created_at) ?? 'N/A' }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6">{{ $key->created_by ?? 'N/A' }}</span></td>
+                                    <td><span class="align-middle badge text-dark fs-6">{{ Controller::userUsername($key->created_by) }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ number_format(KeyController::keyPriceCalculator($key->rank, $key->app->ppd_basic, $key->app->ppd_premium, $key->max_devices, $key->duration)) }}{{ $currency }}</span></td>
                                     <td>
                                         <a href={{ route('keys.edit', ['id' => $key->edit_id]) }} class="btn btn-outline-dark">

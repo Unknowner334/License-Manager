@@ -22,14 +22,13 @@ class User extends Authenticatable
         'status',
         'reff',
         'created_by',
+        'created_at',
+        'updated_at',
     ];
 
     protected $hidden = [
         'id',
-        'password',
         'remember_token',
-        'created_at',
-        'updated_at',
     ];
 
     protected static function booted()

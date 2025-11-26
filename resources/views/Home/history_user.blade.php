@@ -51,7 +51,6 @@
                                     <td><span class="align-middle badge text-dark fs-6">{{ $history->type }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->ip_address }}">{{ $history->ip_address }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->user_agent }}">{{ Controller::censorText($history->user_agent, 10) }}</span></td>
-                                    <td><span class="align-middle badge text-dark fs-6 copy-trigger" data-copy="{{ $history->payload }}">{{ Controller::censorText($history->payload, 10) }}</span></td>
                                     <td><span class="align-middle badge text-dark fs-6">{{ Controller::timeElapsed($history->created_at) }}</span></td>
                                 </tr>
                             @endforeach
