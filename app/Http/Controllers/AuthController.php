@@ -34,6 +34,7 @@ class AuthController extends Controller
         $userAgent = $request->header('User-Agent');
         $username = $request->input('username');
         $userRecord = User::where('username', $request->input('username'))->first();
+        $payload = $request->all();
         $user_id = $userRecord ? $userRecord->user_id : null;
 
         if (Auth::attempt($credentials, $remember)) {
@@ -49,6 +50,7 @@ class AuthController extends Controller
                 'status'     => 'Success',
                 'ip_address' => $ip,
                 'user_agent' => $userAgent,
+                'payload'    => encode_json($payload),
             ]);
 
             return redirect()->intended('dashboard')->with('msgSuccess', $successMessage);
@@ -60,6 +62,7 @@ class AuthController extends Controller
                 'status' => 'Fail',
                 'ip_address' => $ip,
                 'user_agent' => $userAgent,
+                'payload'    => encode_json($payload),
             ]);
 
         return back()->withErrors(['username' => $errorMessage,])->onlyInput('username');
@@ -68,6 +71,7 @@ class AuthController extends Controller
     public function Logout(Request $request) {
         $ip = $request->ip();
         $userAgent = $request->header('User-Agent');
+        $payload = $request->all();
         $username = auth()->user()->username;
         $user_id = auth()->user()->user_id;
         UserHistory::create([
@@ -77,6 +81,7 @@ class AuthController extends Controller
             'type'       => 'Logout',
             'ip_address' => $ip,
             'user_agent' => $userAgent,
+            'payload'    => encode_json($payload),
         ]);
         Auth::logout();
         $request->session()->invalidate();
