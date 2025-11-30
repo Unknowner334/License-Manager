@@ -12,11 +12,11 @@ use App\Models\Reff;
 
 class AuthController extends Controller
 {
-    public function LoginView() {
+    public function login() {
         return view('Auth.login');
     }
     
-    public function LoginPost(Request $request) {
+    public function login_action(Request $request) {
         $successMessage = Config::get('messages.success.logged_in');
         $errorMessage = Config::get('messages.error.wrong_creds');
 
@@ -38,11 +38,10 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            $now = now();
-            Session::put('login_time', $now);
-            
-            User::where('username', $request->input('username'))->update(['last_login' => $now]);
-
+            $minutes = $remember ? 60 * 24 * 7 : 30;
+            Session::put('session_lifetime', $minutes);
+            Session::put('login_time', now());
+            User::where('username', $username)->update(['last_login' => now()]);
             UserHistory::create([
                 'user_id'    => $user_id,
                 'username'   => $username,
@@ -55,17 +54,17 @@ class AuthController extends Controller
         }
 
         UserHistory::create([
-                'user_id' => $user_id,
-                'username' => $username,
-                'status' => 'Fail',
-                'ip_address' => $ip,
-                'user_agent' => $userAgent,
-            ]);
+            'user_id' => $user_id,
+            'username' => $username,
+            'status' => 'Fail',
+            'ip_address' => $ip,
+            'user_agent' => $userAgent,
+        ]);
 
-        return back()->withErrors(['username' => $errorMessage,])->onlyInput('username');
+        return back()->withErrors(['username' => $errorMessage])->onlyInput('username');
     }
     
-    public function Logout(Request $request) {
+    public function logout(Request $request) {
         $ip = $request->ip();
         $userAgent = $request->header('User-Agent');
         $username = auth()->user()->username;
@@ -86,11 +85,11 @@ class AuthController extends Controller
         return redirect('/login')->with('msgSuccess', $successMessage);
     }
 
-    public function RegisterView() {
+    public function register() {
         return view('Auth.register');
     }
 
-    public function RegisterPost(Request $request) {
+    public function register_action(Request $request) {
         $successMessage = Config::get('messages.success.register_success');
         $errorMessage = Config::get('messages.error.register_fail');
 

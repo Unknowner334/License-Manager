@@ -10,11 +10,11 @@ use App\Models\User;
 
 class SettingController extends Controller
 {
-    public function Settings() {
+    public function settings() {
         return view('Home.settings');
     }
 
-    public function SettingsUsername(Request $request) {
+    public function settingsusername(Request $request) {
         $successMessage = str_replace(':flag', 'Username', Config::get('messages.success.updated'));
         $errorMessage = Config::get('messages.error.validation');
 
@@ -46,7 +46,7 @@ class SettingController extends Controller
         }
     }
 
-    public function SettingsName(Request $request) {
+    public function settingsname(Request $request) {
         $successMessage = str_replace(':flag', 'Name', Config::get('messages.success.updated'));
         $errorMessage = Config::get('messages.error.validation');
 
@@ -74,7 +74,7 @@ class SettingController extends Controller
         }
     }
 
-    public function SettingsPassword(Request $request){
+    public function settingspassword(Request $request){
         $successMessage = str_replace(':flag', 'Password', Config::get('messages.success.updated'));
         $errorMessage = Config::get('messages.error.validation');
 

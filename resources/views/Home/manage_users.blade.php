@@ -23,7 +23,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-sm table-bordered table-striped table-hover text-center">
+                    <table class="table table-sm table-bordered table-hover text-center">
                         <tr>
                             <th><span class="align-middle badge text-dark fs-6">#</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Name</span></th>

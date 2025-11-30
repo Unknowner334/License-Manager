@@ -12,9 +12,6 @@
         <div class="card mb-5">
             <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
                 <span class="h6 mb-0">Key Editing</span>
-                <div class="d-flex align-items-center gap-2">
-                    <a class="btn btn-outline-light btn-sm" href={{ route('keys') }}><i class="bi bi-key"></i> BACK</a>
-                </div>
             </div>
             <div class="card-body">
                 <form action={{ route('keys.edit.post') }} method="post" id="updateForm">
@@ -124,6 +121,9 @@
                 </form>
             </div>
         </div>
+        <p class="text-muted text-center">
+            <a href="{{ route('keys') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Keys</small></a>
+        </p>
     </div>
 
     <div class="modal fade" id="confirmUpdateModal" tabindex="-1" aria-hidden="true">

@@ -79,37 +79,25 @@ class KeyController extends Controller
         return $key->histories->where('status', 'Success')->unique('serial_number')->count();
     }
 
-    public function KeyListView(Request $request) {
-        if ($request->get('search')) {
-            if (auth()->user()->permissions == "Owner") {
-                $keys = Key::where('key', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
-            } else {
-                $keys = Key::where('created_by', auth()->user()->user_id)->where('key', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
-            }
-
-            $fullKeys = Key::where('key', $request->get('search'))->orderBy('created_at', 'desc')->get();
+    public function keylist(Request $request) {
+        if (auth()->user()->permissions == "Owner") {
+            $keys = Key::get();
         } else {
-            if (auth()->user()->permissions == "Owner") {
-                $keys = Key::orderBy('created_at', 'desc')->paginate(10);
-            } else {
-                $keys = Key::where('created_by', auth()->user()->user_id)->orderBy('created_at', 'desc')->paginate(10);
-            }
-
-            $fullKeys = Key::orderBy('created_at', 'desc')->get();
+            $keys = Key::where('created_by', auth()->user()->user_id)->get();
         }
         $currency = Config::get('messages.settings.currency');
 
-        return view('Key.list', compact('keys', 'fullKeys', 'currency'));
+        return view('Key.list', compact('keys', 'currency'));
     }
 
-    public function KeyGenerateView() {
+    public function keygenerate() {
         $apps = App::orderBy('created_at', 'desc')->get();
         $currency = Config::get('messages.settings.currency');
 
         return view('Key.generate', compact('apps', 'currency'));
     }
 
-    public function KeyGeneratePost(Request $request) {
+    public function keygenerate_action(Request $request) {
         $successMessage = Config::get('messages.success.created');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -149,7 +137,7 @@ class KeyController extends Controller
         }
     }
 
-    public function KeyEditView($id) {
+    public function keyedit($id) {
         $errorMessage = Config::get('messages.error.validation');
 
         if (auth()->user()->permissions == "Owner") {
@@ -172,7 +160,7 @@ class KeyController extends Controller
         return view('Key.edit', compact('key', 'apps', 'currency'));
     }
 
-    public function KeyEditPost(Request $request) {
+    public function keyedit_action(Request $request) {
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -252,7 +240,7 @@ class KeyController extends Controller
         }
     }
 
-    public function KeyHistoryView($id) {
+    public function keyhistory($id) {
         $errorMessage = Config::get('messages.error.validation');
 
         if (auth()->user()->permissions == "Owner") {
@@ -272,7 +260,7 @@ class KeyController extends Controller
         return view('Key.history', compact('keyHistory', 'id'));
     }
     
-    public function KeyHistoryDelete(Request $request) {
+    public function keyhistorydelete(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -306,7 +294,7 @@ class KeyController extends Controller
         }
     }
 
-    public function KeyHistoryDeleteAll(Request $request) {
+    public function keyhistorydeleteall(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -339,7 +327,7 @@ class KeyController extends Controller
         }
     }
 
-    public function KeyDelete(Request $request) {
+    public function keydelete(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 

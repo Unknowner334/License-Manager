@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 
 class AppController extends Controller
 {
-    public function AppListView(Request $request) {
+    public function applist(Request $request) {
         if ($request->get('search')) {
             $apps = App::where('name', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
         } else {
@@ -20,7 +20,7 @@ class AppController extends Controller
         return view('App.list', compact('apps', 'currency'));
     }
 
-    public function AppGenerateView() {
+    public function appgenerate() {
         $errorMessage = Config::get('messages.error.validation');
 
         if (auth()->user()->permissions == "Admin") {
@@ -30,7 +30,7 @@ class AppController extends Controller
         return view('App.generate');
     }
 
-    public function AppGeneratePost(Request $request) {
+    public function appgenerate_action(Request $request) {
         $successMessage = Config::get('messages.success.created');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -60,7 +60,7 @@ class AppController extends Controller
         }
     }
 
-    public function AppEditView($id) {
+    public function appedit($id) {
         $errorMessage = Config::get('messages.error.validation');
         $app = App::where('edit_id', $id)->first();
 
@@ -71,7 +71,7 @@ class AppController extends Controller
         return view('App.edit', compact('app'));
     }
 
-    public function AppEditPost(Request $request) {
+    public function appedit_action(Request $request) {
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -124,7 +124,7 @@ class AppController extends Controller
         }
     }
 
-    public function AppDelete(Request $request) {
+    public function appdelete(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -147,7 +147,7 @@ class AppController extends Controller
         }
     }
 
-    public function AppDeleteKeys(Request $request) {
+    public function appdeletekeys(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -170,7 +170,7 @@ class AppController extends Controller
         }
     }
 
-    public function AppDeleteKeysMe(Request $request) {
+    public function appdeletekeysme(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 

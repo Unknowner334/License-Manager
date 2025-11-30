@@ -20,19 +20,23 @@ class DashController extends Controller
         return $reff->users->count();
     }
 
-    public function Dashboard() {
+    public function dashboard() {
         if (auth()->user()->permissions == "Owner") {
             $keys = Key::orderBy('created_at', 'desc')->paginate(5, ['*'], 'keys_page');
         } else {
             $keys = Key::where('created_by', auth()->user()->user_id)->orderBy('created_at', 'desc')->paginate(10, ['*'], 'keys_page');
         }
+
         $apps = App::orderBy('created_at', 'desc')->paginate(5, ['*'], 'apps_page');
         $currency = Config::get('messages.settings.currency');
+        $loginTime = session('login_time');
+        $sessionLifetime = session('session_lifetime');
+        $expiryTime = $loginTime ? $loginTime->copy()->addMinutes($sessionLifetime) : null;
 
-        return view('Home.dashboard', compact('keys', 'apps', 'currency'));
+        return view('Home.dashboard', compact('keys', 'apps', 'currency', 'expiryTime', 'loginTime', 'sessionLifetime'));
     }
 
-    public function ManageUsers(Request $request) {
+    public function manageusers(Request $request) {
         $errorMessage = Config::get('messages.error.validation');
         if ($request->get('search')) {
             $users = User::where('username', $request->get('search'))->orderBy('created_at', 'desc')->paginate(10);
@@ -47,7 +51,7 @@ class DashController extends Controller
         return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
     }
 
-    public function ManageUsersGenerateView() {
+    public function manageusersgenerate() {
         $errorMessage = Config::get('messages.error.validation');
 
         if (auth()->user()->permissions == "Owner") {
@@ -57,7 +61,7 @@ class DashController extends Controller
         return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
     }
 
-    public function ManageUsersGeneratePost(Request $request) {
+    public function manageusersgenerate_action(Request $request) {
         $successMessage = Config::get('messages.success.created');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -91,7 +95,7 @@ class DashController extends Controller
         }
     }
 
-    public function ManageUsersEditView($id) {
+    public function manageusersedit($id) {
         $errorMessage = Config::get('messages.error.validation');
         $user = User::where('user_id', $id)->first();
 
@@ -106,7 +110,7 @@ class DashController extends Controller
         return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
     }
 
-    public function ManageUsersEditPost(Request $request) {
+    public function manageusersedit_action(Request $request) {
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -160,7 +164,7 @@ class DashController extends Controller
         }
     }
 
-    public function ManageUsersDeletePost(Request $request) {
+    public function manageusersdelete(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -189,7 +193,7 @@ class DashController extends Controller
         }
     }
     
-    public function ManageUsersHistoryView() {
+    public function manageusershistroy() {
         $errorMessage = Config::get('messages.error.validation');
         $histories = UserHistory::orderBy('created_at', 'desc')->paginate(10);
 
@@ -204,7 +208,7 @@ class DashController extends Controller
         return view('Home.history_user', compact('histories'));
     }
 
-    public function ManageUsersHistoryUserView($id) {
+    public function manageusershistoryuser($id) {
         $errorMessage = Config::get('messages.error.validation');
         $histories = UserHistory::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);
 
@@ -219,7 +223,7 @@ class DashController extends Controller
         return view('Home.history_user', compact('histories'));
     }
 
-    public function ManageReferrable() {
+    public function managereferrable() {
         $errorMessage = Config::get('messages.error.validation');
         $reffs = Reff::orderBy('created_at', 'desc')->paginate(10);
 
@@ -230,7 +234,7 @@ class DashController extends Controller
         return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
     }
 
-    public function ManageReferrableGenerateView() {
+    public function managereferrablegenerate() {
         $errorMessage = Config::get('messages.error.validation');
 
         if (auth()->user()->permissions == "Owner") {
@@ -240,7 +244,7 @@ class DashController extends Controller
         return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
     }
 
-    public function ManageReferrableGeneratePost(Request $request) {
+    public function managereferrablegenerate_action(Request $request) {
         $successMessage = Config::get('messages.success.created');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -284,7 +288,7 @@ class DashController extends Controller
         }
     }
 
-    public function ManageReferrableEditView($id) {
+    public function managereferrableedit($id) {
         $errorMessage = Config::get('messages.error.validation');
         $reff = Reff::where('edit_id', $id)->first();
 
@@ -299,7 +303,7 @@ class DashController extends Controller
         return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
     }
 
-    public function ManageReferrableEditPost(Request $request) {
+    public function managereferrableedit_action(Request $request) {
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
@@ -349,7 +353,7 @@ class DashController extends Controller
         }
     }
 
-    public function ManageReferrableDeletePost(Request $request) {
+    public function managereferrabledelete(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 

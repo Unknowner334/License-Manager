@@ -16,7 +16,6 @@
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <span class="h6 mb-0">Keys History</span>
                 <div class="d-flex align-items-center gap-2">
-                    <a class="btn btn-outline-light btn-sm" href={{ route('keys') }}><i class="bi bi-key"></i> BACK</a>
                     <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="bi bi-trash3"></i> DELETE ALL</button>
                     <form action={{ route('keys.history.delete.all') }} method="post" id="deleteForm">
                         @csrf
@@ -26,7 +25,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-sm table-bordered table-striped table-hover text-center">
+                    <table class="table table-sm table-bordered table-hover text-center">
                         <tr>
                             <th><span class="align-middle badge text-dark fs-6">#</span></th>
                             <th><span class="align-middle badge text-dark fs-6">Key ID</span></th>
@@ -80,6 +79,9 @@
                 </div>
             </div>
         </div>
+        <p class="text-muted text-center">
+            <a href="{{ route('keys') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Keys</small></a>
+        </p>
     </div>
 
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">

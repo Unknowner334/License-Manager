@@ -58,7 +58,7 @@ abstract class Controller
                 return 'N/A';
             }
 
-            $parts = array_slice($parts, 0, 2);
+            $parts = array_slice($parts, 0, 1);
 
             return implode(', ', $parts) . ' ago';
         } catch (\Exception $e) {
