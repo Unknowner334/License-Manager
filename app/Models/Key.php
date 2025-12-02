@@ -46,9 +46,4 @@ class Key extends Model
     {
         return $this->belongsTo(App::class, 'app_id', 'app_id');
     }
-
-    public function histories()
-    {
-        return $this->hasMany(KeyHistory::class, 'key_id', 'edit_id');
-    }
 }

@@ -26,6 +26,7 @@
                                                 <td>{{ $item->app->name }}</td>
                                                 <td><span class="align-middle badge text-dark fw-semibold">{{ Controller::censorText($item->key) }}</span></td>
                                                 <td><span class="align-middle badge text-dark fw-semibold">{{ $item->duration }} Days</span></td>
+                                                <td><span class="align-middle badge text-primary fw-semibold">{{ Controller::userUsername($item->registrar) }}</span></td>
                                                 <td><span class="align-middle badge text-primary fw-semibold">{{ $item->max_devices }} Devices</span></td>
                                                 <td><i class="align-middle badge text-muted fw-semibold">{{ Controller::timeElapsed($item->created_at) }}</i></td>
                                             </tr>

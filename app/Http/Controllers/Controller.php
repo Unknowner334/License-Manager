@@ -92,13 +92,17 @@ abstract class Controller
         return $user?->username ?? 'N/A';
     }
 
-    static function saldoData($userSaldo, $userRole) {
+    static function saldoData($userSaldo, $userRole, $raw = 0) {
         $currency = Config::get('messages.settings.currency');
         if ($userSaldo >= 2000000000 || $userRole == "Owner") {
             $saldo = "∾";
             $saldo_color = "primary";
         } else {
-            $saldo = number_format($userSaldo) . $currency;
+            if ($raw === 1) {
+                $saldo = $userSaldo;
+            } else {
+                $saldo = number_format($userSaldo) . $currency;
+            }
             if ($userSaldo <= 100) {
                 $saldo_color = "danger";
             } else if ($userSaldo <= 1000) {
@@ -113,7 +117,7 @@ abstract class Controller
         return $data;
     }
 
-    static function require_ownership($allow_manager = 0) {
+    static function require_ownership($allow_manager = 0, $fail = 1) {
         $user = auth()->user();
         $errorMessage = Config::get('messages.error.validation');
 
@@ -122,11 +126,13 @@ abstract class Controller
         if ($allow_manager == 1 && $user->role === "Manager") return true;
         if ($user->role === "Owner") return true;
 
-        throw new HttpResponseException(
-            back()->withErrors([
-                'name' => str_replace(':info', 'Error Code 201, <strong>Access Forbidden</strong>', $errorMessage)
-            ])->onlyInput('name')
-        );
+        if ($fail == 1) {
+            throw new HttpResponseException(
+                back()->withErrors([
+                    'name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage)
+                ])->onlyInput('name')
+            );
+        }
 
         return false;
     }
@@ -136,7 +142,7 @@ abstract class Controller
             if ($role === "Owner") {
                 throw new HttpResponseException(
                     back()->withErrors([
-                        'name' => 'You cannot register, edit, or delete a user with a higher role than yours.'
+                        'name' => '<b>You</b> cannot <b>register</b>, <b>edit</b>, or <b>delete</b> a user with a <b>higher</b> role than yours.'
                     ])->onlyInput('name')
                 );
                 return false;
@@ -150,7 +156,7 @@ abstract class Controller
         if ($user->user_id == auth()->user()->user_id && $user->id == auth()->user()->id) {
             throw new HttpResponseException(
                 back()->withErrors([
-                    'name' => 'The selected user is the same as the currently logged-in user.'
+                    'name' => 'The selected <b>user</b> is the same as the currently <b>logged-in</b> user.'
                 ])->onlyInput('name')
             );
             return false;

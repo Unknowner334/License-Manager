@@ -3,20 +3,20 @@
 return [
     'success' => [
         // ? General
-        'logged_in'  => '<strong>Logged In</strong> Successfully.',
-        'logged_out' => '<strong>Logged Out</strong> Successfully.',
-        'register_success' => '<strong>Registered Successfully</strong>, You can now login.',
+        'logged_in'  => '<b>Logged In</b> Successfully.',
+        'logged_out' => '<b>Logged Out</b> Successfully.',
+        'register_success' => '<b>Registered Successfully</b>, You can now login.',
         // ? Setting
-        'created' => ':flag <strong>Successfully Created</strong>.',
-        'updated' => ':flag <strong>Successfully Updated</strong>.',
-        'deleted' => ':flag <strong>Successfully Deleted</strong>.',
+        'created' => ':flag <b>Successfully Created</b>.',
+        'updated' => ':flag <b>Successfully Updated</b>.',
+        'deleted' => ':flag <b>Successfully Deleted</b>.',
     ],
 
     'error' => [
         // ? General
-        'wrong_creds' => '<strong>Invalid</strong> Credentials.',
-        'register_fail' => '<strong>Register Failed</strong>, Please Try Again Later.',
-        'validation' => '<strong>Something Went Wrong</strong>, :info.',
+        'wrong_creds' => '<b>Invalid</b> Credentials.',
+        'register_fail' => '<b>Register Failed</b>, Please Try Again Later.',
+        'validation' => '<b>Something Went Wrong</b>, :info.',
     ],
 
     'settings' => [

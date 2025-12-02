@@ -10,17 +10,28 @@
     <div class="col-lg-6">
         @include('Layout.msgStatus')
         <div class="card mb-5">
-            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-                <span class="h6 mb-0">Key Editing</span>
+            <div class="card-header text-center text-white bg-dark">
+                Key Editing · {{ $key->key }}
             </div>
             <div class="card-body">
                 <form action={{ route('keys.edit.post') }} method="post" id="updateForm">
                     @csrf
                     <input type="hidden" name="edit_id" id="edit_id" value="{{ $key->edit_id }}" required>
 
-                    <div class="form-group mb-3">
-                        <label for="key" class="form-label">Key (Leave Empty For Random 16 Chars)</label>
-                        <input type="text" name="key" id="key" class="form-control" placeholder="Key" value="{{ $key->key }}">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group mb-3">
+                                <label for="key" class="form-label">Key (Leave Empty For Random Key)</label>
+                                <input type="text" name="key" id="key" class="form-control" placeholder="Key" value="{{ $key->key }}">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="form-group mb-3">
+                                <label for="devices" class="form-label">Max Devices</label>
+                                <input type="number" name="devices" id="devices" class="form-control" required placeholder="Max Devices" value="{{ $key->max_devices }}">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -29,11 +40,9 @@
                                 <label for="app" class="form-label">App</label>
                                 <select name="app" id="app" class="form-control">
                                     <option value="">-- Select App --</option>
-                                    @php $count = 0; @endphp
                                     @if ($apps)
                                         @foreach ($apps as $app)
-                                            @php $count + 1; @endphp
-                                            <option value="{{ $app->app_id }}" class="text-{{ Controller::statusColor($app->status) }}" @if ($app->status != 'Active') disabled @endif @if ($app->app_id == $key->app_id) selected @endif>{{ $app->name }} - {{ number_format($app->price) . $currency }}</option>
+                                            <option value="{{ $app->app_id }}" @if ($app->app_id == $key->app_id) selected @endif>{{ $app->name }} - {{ number_format($app->price) . $currency }}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -85,19 +94,14 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label for="devices" class="form-label">Max Devices</label>
-                        <input type="number" name="devices" id="devices" class="form-control" required placeholder="Max Devices" value="{{ $key->max_devices }}">
-                    </div>    
-
-                    <div class="form-group mb-3">
                         <label for="estimation" class="form-label">Estimation</label>
                         <input type="text" id="estimation" class="form-control" style="background-color: rgb(233, 236, 239); opacity: 1;" placeholder="Your order will total" readonly>
                     </div>
 
                     <div class="form-group">
-                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmUpdateModal"><i class="bi bi-plus-square"></i> Update</button>
+                        <button type="button" class="btn btn-outline-dark" id="updateBtn">Update</button>
 
-                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="bi bi-trash3"></i> Delete</button>
+                        <button type="button" class="btn btn-outline-dark" id="deleteBtn"><i class="bi bi-trash3"></i> Delete</button>
                     </div>
                 </form>
                 <form action="{{ route('keys.delete') }}" method="post" id="deleteForm">
@@ -111,43 +115,39 @@
         </p>
     </div>
 
-    <div class="modal fade" id="confirmUpdateModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-bg-danger">
-                    <h5 class="modal-title">Confirm Update</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to update the key?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmUpdateBtn">Yes, Update</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-bg-danger">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete the key?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
+        document.getElementById('updateBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure you want to edit the key?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, edit'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('updateForm').submit();
+                }
+            });
+        });
+
+        document.getElementById('deleteBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure you want to delete the key?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        });
+
         function numberFormat(number, decimals = 0, decPoint = '.', thousandsSep = ',') {
             number = parseFloat(number);
 
@@ -161,14 +161,6 @@
 
             return parts.join(decPoint);
         }
-
-        document.getElementById('confirmUpdateBtn').addEventListener('click', function() {
-            document.getElementById('updateForm').submit();
-        });
-
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-            document.getElementById('deleteForm').submit();
-        });
 
         const appPrices = {
             @foreach($apps as $app)

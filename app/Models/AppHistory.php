@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class KeyHistory extends Model
 {
-    protected $table = 'key_history';
+    protected $table = 'app_history';
 
     protected $fillable = [
-        'key_id',
+        'app_id',
         'type',
         'created_at',
         'updated_at',

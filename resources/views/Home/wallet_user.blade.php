@@ -6,7 +6,7 @@
     <div class="col-lg-6">
         @include('Layout.msgStatus')
         <div class="card shadow-sm mb-5">
-            <div class="card-header text-center text-white bg-danger">
+            <div class="card-header text-center text-white bg-dark">
                 Users Saldo Editing · {{ $user->username }}
             </div>
             <div class="card-body">
@@ -25,7 +25,7 @@
                     </div>
 
                     <div class="form-group">
-                        <button type="button" class="btn btn-outline-danger" id="changeBtn">Change User's Saldo</button>
+                        <button type="button" class="btn btn-outline-dark" id="changeBtn">Change User's Saldo</button>
                     </div>
                 </form>
             </div>

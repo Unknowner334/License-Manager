@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use App\Models\Key;
-use App\Models\KeyHistory;
 use App\Models\App;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
@@ -62,15 +61,14 @@ class KeyController extends Controller
         }
     }
 
-    static function DevicesHooked($key_id) {
-        $key = Key::where('edit_id', $key_id)->first();
-        if (!$key) return "N/A";
-
-        return $key->histories->where('status', 'Success')->unique('serial_number')->count();
+    static function DevicesHooked($serials) {
+        $items = preg_split('/[\s,]+/', trim($serials), -1, PREG_SPLIT_NO_EMPTY);
+        $count = count($items);
+        return $count;
     }
 
     public function keylist(Request $request) {
-        if (auth()->user()->permissions == "Owner") {
+        if (parent::require_ownership(1, 0)) {
             $keys = Key::get();
         } else {
             $keys = Key::where('registrar', auth()->user()->user_id)->get();
@@ -81,7 +79,7 @@ class KeyController extends Controller
     }
 
     public function keygenerate() {
-        $apps = App::orderBy('created_at', 'desc')->get();
+        $apps = App::where('status', 'Active')->orderBy('created_at', 'desc')->get();
         $currency = Config::get('messages.settings.currency');
 
         return view('Key.generate', compact('apps', 'currency'));
@@ -106,20 +104,47 @@ class KeyController extends Controller
 
         $now = Carbon::now();
         $expire_date = $now->addDays((int) $request->input('duration'));
+        $saldo_price = 10;
+        $currency = Config::get('messages.settings.currency');
+        $owner = $request->input('owner') ?? "";
+        $duration = $request->input('duration');
+        $status = $request->input('status');
+        $devices = $request->input('devices');
+        $appName = App::where('app_id', $request->input('app'))->first()->name;
+        $saldo = parent::saldoData(auth()->user()->saldo, auth()->user()->role, 1);
+        auth()->user()->deductSaldo($saldo_price);
+
+        if (is_int($saldo[0])) {
+            $saldo_ext = (int) $saldo[0] - $saldo_price . $currency;
+        } else {
+            $saldo_ext = $saldo[0];
+        }
 
         try {
             Key::create([
                 'app_id'      => $request->input('app'),
-                'owner'       => $request->input('owner') ?? "",
-                'duration'    => $request->input('duration'),
+                'owner'       => $owner,
+                'duration'    => $duration,
                 'expire_date' => $expire_date,
                 'key'         => $key,
-                'status'      => $request->input('status'),
-                'max_devices' => $request->input('devices'),
-                'registrar'  => auth()->user()->user_id,
+                'status'      => $status,
+                'max_devices' => $devices,
+                'registrar'   => auth()->user()->user_id,
             ]);
 
-            return redirect()->route('keys.generate')->with('msgSuccess', str_replace(':flag', "Key " . $key, $successMessage));
+            $msg = str_replace(':flag', "<b>Key</b>", $successMessage);
+            return redirect()->route('keys.generate')->with('msgSuccess',
+                "
+                $msg <br>
+                <i class='bi bi-terminal'></i> <b>App: $appName</b> <br>
+                <i class='bi bi-key'></i> <b>Key: $key</b> <br>
+                <i class='bi bi-award'></i> <b>Owner: $owner</b> <br>
+                <i class='bi bi-clock'></i> <b>Duration: $duration Days</b> <br>
+                <i class='bi bi-clipboard-check'></i> <b>Status: $status</b> <br>
+                <i class='bi bi-phone'></i> <b>Max Devices: $devices</b> <br>
+                <i class='bi bi-wallet'></i> <b>Saldo: $saldo_ext</b>
+                "
+            );
         } catch (\Exception $e) {
             return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
         }
@@ -128,14 +153,14 @@ class KeyController extends Controller
     public function keyedit($id) {
         $errorMessage = Config::get('messages.error.validation');
 
-        if (auth()->user()->permissions == "Owner") {
+        if (parent::require_ownership(1, 0)) {
             $key = Key::where('edit_id', $id)->first();
 
             if (empty($key)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
             }
         } else {
-            $key = Key::where('created_by', auth()->user()->user_id)->where('edit_id', $id)->first();
+            $key = Key::where('registrar', auth()->user()->user_id)->where('edit_id', $id)->first();
 
             if (empty($key)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
@@ -162,7 +187,7 @@ class KeyController extends Controller
             'devices'  => 'required|integer|min:1|max:1000000',
         ]);
 
-        if (auth()->user()->permissions == "Owner") {
+        if (parent::require_ownership(1, 0)) {
             $key = Key::where('edit_id', $request->input('edit_id'))->first();
 
             if (empty($key)) {
@@ -172,7 +197,7 @@ class KeyController extends Controller
             $key = Key::where('created_by', auth()->user()->user_id)->where('edit_id', $id)->first();
 
             if (empty($key)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage),])->onlyInput('name');
             }
         }
 
@@ -225,93 +250,6 @@ class KeyController extends Controller
         }
     }
 
-    public function keyhistory($id) {
-        $errorMessage = Config::get('messages.error.validation');
-
-        if (auth()->user()->permissions == "Owner") {
-            $keyHistory = Key::where('edit_id', $id)->first()->histories()->paginate(10);
-
-            if (empty($keyHistory)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
-            }
-        } else {
-            $keyHistory = Key::where('created_by', auth()->user()->user_id)->where('edit_id', $id)->first()->histories()->paginate(10);
-
-            if (empty($keyHistory)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
-            }
-        }
-
-        return view('Key.history', compact('keyHistory', 'id'));
-    }
-    
-    public function keyhistorydelete(Request $request) {
-        $successMessage = Config::get('messages.success.deleted');
-        $errorMessage = Config::get('messages.error.validation');
-
-        $request->validate([
-            'key_id'  => 'required|string|min:6|max:36',
-            'id'  => 'required|integer|min:1',
-        ]);
-
-        if (auth()->user()->permissions == "Owner") {
-            $key = Key::where('edit_id', $request->input('key_id'))->first();
-
-            if (empty($key)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
-            }
-        } else {
-            $key = Key::where('created_by', auth()->user()->user_id)->where('key_id', $id)->first();
-
-            if (empty($key)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
-            }
-        }
-
-        $keyName = $key->key;
-
-        try {
-            $key->histories()->where('id', $request->input('id'))->first()->delete();
-
-            return redirect()->route('keys.history', ['id' => $request->input('key_id')])->with('msgSuccess', str_replace(':flag', "Key " . $keyName . " History", $successMessage));
-        } catch (\Exception $e) {
-            return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
-        }
-    }
-
-    public function keyhistorydeleteall(Request $request) {
-        $successMessage = Config::get('messages.success.deleted');
-        $errorMessage = Config::get('messages.error.validation');
-
-        $request->validate([
-            'id'  => 'required|string|min:6|max:36',
-        ]);
-
-        if (auth()->user()->permissions == "Owner") {
-            $key = Key::where('edit_id', $request->input('id'))->first();
-
-            if (empty($key)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
-            }
-        } else {
-            $key = Key::where('created_by', auth()->user()->user_id)->where('id', $id)->first();
-
-            if (empty($key)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
-            }
-        }
-
-        $keyName = $key->key;
-
-        try {
-            $key->histories()->delete();
-
-            return redirect()->route('keys.history', ['id' => $request->input('id')])->with('msgSuccess', str_replace(':flag', "Key " . $keyName . " History", $successMessage));
-        } catch (\Exception $e) {
-            return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
-        }
-    }
-
     public function keydelete(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
@@ -320,17 +258,17 @@ class KeyController extends Controller
             'edit_id'  => 'required|string|min:6|max:36',
         ]);
 
-        if (auth()->user()->permissions == "Owner") {
+        if (parent::require_ownership(1, 0)) {
             $key = Key::where('edit_id', $request->input('edit_id'))->first();
 
             if (empty($key)) {
                 return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
             }
         } else {
-            $key = Key::where('created_by', auth()->user()->user_id)->where('edit_id', $id)->first();
+            $key = Key::where('registrar', auth()->user()->user_id)->where('edit_id', $request->input('edit_id'))->first();
 
             if (empty($key)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 202, Access Forbidden', $errorMessage),])->onlyInput('name');
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage),])->onlyInput('name');
             }
         }
 
@@ -339,9 +277,9 @@ class KeyController extends Controller
         try {
             $key->delete();
 
-            return redirect()->route('keys')->with('msgSuccess', str_replace(':flag', "Key " . $keyName, $successMessage));
+            return redirect()->route('keys')->with('msgSuccess', str_replace(':flag', "<b>Key</b> " . $keyName, $successMessage));
         } catch (\Exception $e) {
-            return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
         }
     }
 }

@@ -10,8 +10,8 @@
     <div class="col-lg-6">
         @include('Layout.msgStatus')
         <div class="card mb-5">
-            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-                <span class="h6 mb-0">Keys Registering</span>
+            <div class="card-header text-center text-white bg-dark">
+                Keys Registering
             </div>
             <div class="card-body">
                 <form action={{ route('keys.generate.post') }} method="post" id="generateForm">
@@ -25,8 +25,8 @@
                                     @php $count = 0; @endphp
                                     @if ($apps)
                                         @foreach ($apps as $app)
-                                            @php $count + 1; @endphp
-                                            <option value="{{ $app->app_id }}" class="text-{{ Controller::statusColor($app->status) }}" @if ($app->status != 'Active') disabled @endif>{{ $app->name }} - {{ number_format($app->price) . $currency }}</option>
+                                            @php $count += 1; @endphp
+                                            <option value="{{ $app->app_id }}" @if ($count == 1) selected @endif>{{ $app->name }} - {{ number_format($app->price) . $currency }}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -74,19 +74,24 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="devices" class="form-label">Max Devices</label>
-                        <input type="number" name="devices" id="devices" class="form-control" required placeholder="Max Devices" value="1">
-                    </div>
-
-
-                    <div class="form-group mb-3">
-                        <label for="estimation" class="form-label">Estimation</label>
-                        <input type="text" id="estimation" class="form-control" style="background-color: rgb(233, 236, 239); opacity: 1;" placeholder="Your order will total" readonly>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group mb-3">
+                                <label for="devices" class="form-label">Max Devices</label>
+                                <input type="number" name="devices" id="devices" class="form-control" required placeholder="Max Devices" value="1">
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div class="form-group mb-3">
+                                <label for="estimation" class="form-label">Estimation</label>
+                                <input type="text" id="estimation" class="form-control" style="background-color: rgb(233, 236, 239); opacity: 1;" placeholder="Your order will total" readonly>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmGenerateModal"><i class="bi bi-plus-square"></i> Generate</button>
+                        <button type="button" class="btn btn-outline-dark" id="generateBtn">Generate</button>
                     </div>
                 </form>
             </div>
@@ -96,25 +101,23 @@
         </p>
     </div>
 
-    <div class="modal fade" id="confirmGenerateModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-bg-danger">
-                    <h5 class="modal-title">Confirm Generate</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to generate the key?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmGenerateBtn">Yes, Generate</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure you want to register a key?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, register'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('generateForm').submit();
+                }
+            });
+        });
+
         function numberFormat(number, decimals = 0, decPoint = '.', thousandsSep = ',') {
             number = parseFloat(number);
 
@@ -128,10 +131,6 @@
 
             return parts.join(decPoint);
         }
-
-        document.getElementById('confirmGenerateBtn').addEventListener('click', function() {
-            document.getElementById('generateForm').submit();
-        });
 
         const appPrices = {
             @foreach($apps as $app)
