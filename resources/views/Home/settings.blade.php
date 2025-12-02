@@ -107,11 +107,6 @@
                 confirmButtonText: 'Yes, change'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Toast.fire({
-                        icon: 'info',
-                        title: 'Please wait...'
-                    })
-
                     document.getElementById('nameForm').submit();
                 }
             });
@@ -128,11 +123,6 @@
                 confirmButtonText: 'Yes, change'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Toast.fire({
-                        icon: 'info',
-                        title: 'Please wait...'
-                    })
-
                     document.getElementById('usernameForm').submit();
                 }
             });
@@ -149,11 +139,6 @@
                 confirmButtonText: 'Yes, change'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Toast.fire({
-                        icon: 'info',
-                        title: 'Please wait...'
-                    })
-
                     document.getElementById('passwordForm').submit();
                 }
             });

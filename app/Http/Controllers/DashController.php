@@ -172,6 +172,63 @@ class DashController extends Controller
         }
     }
 
+    public function manageuserssaldoedit($id) {
+        $errorMessage = Config::get('messages.error.validation');
+        $user = User::where('user_id', $id)->first();
+
+        if (empty($user)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+        }
+
+        if (auth()->user()->permissions == "Owner") {
+            return view('Home.wallet_user', compact('user'));
+        }
+
+        return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+    }
+
+    public function manageuserssaldoedit_action(Request $request) {
+        $successMessage = Config::get('messages.success.updated');
+        $errorMessage = Config::get('messages.error.validation');
+
+        if (!auth()->user()->permissions == "Owner") {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201, Access Forbidden', $errorMessage),])->onlyInput('name');
+        }
+
+        $request->validate([
+            'user_id'  => 'required|string|min:4|max:100|exists:users,user_id',
+            'saldo'    => 'required|integer|min:1|max:2000000000',
+        ]);
+
+        $new_saldo = $request->input('saldo');
+        $user = User::where('user_id', $request->input('user_id'))->first();
+
+        if (empty($user)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
+        }
+
+        $old_saldo = $user->saldo;
+        $name = $user->name;
+        $username = $user->username;
+
+        try {
+            $user->update([
+                'saldo' => $request->input('saldo'),
+            ]);
+
+            return redirect()->route('admin.users.wallet', $request->input('user_id'))->with('msgSuccess', str_replace(':flag', "<strong>User</strong>", $successMessage))->with('msgSuccess2', 
+                "
+                <b>Name: $name</b> <br>
+                <b>User: $username</b> <br>
+                <b>Old Saldo: $old_saldo</b> <br>
+                <b>New Saldo: $new_saldo</b> <br>
+                "
+            );
+        } catch (\Exception $e) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+        }
+    }
+
     public function manageusersdelete(Request $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');

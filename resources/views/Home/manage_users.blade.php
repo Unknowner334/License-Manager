@@ -11,7 +11,7 @@
         @include('Layout.msgStatus')
         <div class="card shadow-sm mb-5">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                Users Registration
+                Users Registered
                 <div class="d-flex align-items-center gap-2">
                     <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.history') }}><i class="bi bi-person"></i> HISTORY</a>
                     <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.generate') }}><i class="bi bi-person"></i> USER</a>
@@ -61,7 +61,7 @@
                                             <i class="bi bi-wallet"></i>
                                         </a>
 
-                                        <a href={{ route('admin.users.history', ['id' => $item->user_id]) }} class="btn btn-outline-dark btn-sm">
+                                        <a href={{ route('admin.users.history.user', ['id' => $item->user_id]) }} class="btn btn-outline-dark btn-sm">
                                             <i class="bi bi-person"></i>
                                         </a>
 

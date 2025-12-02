@@ -10,7 +10,7 @@
                 Users Editing · {{ $user->username }}
             </div>
             <div class="card-body">
-                <form action={{ route('admin.users.edit.post') }} method="post">
+                <form action={{ route('admin.users.edit.post') }} method="post" id="editForm">
                     @csrf
                     <input type="hidden" name="user_id" id="user_id" required value="{{ $user->user_id }}">
                     <div class="row">
@@ -74,9 +74,9 @@
                     </div>
 
                     <div class="form-group">
-                        <button class="btn btn-outline-danger">Update User</button>
+                        <button type="button" class="btn btn-outline-danger" id="editBtn">Edit User</button>
 
-                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="bi bi-trash3"></i> Delete User</button>
+                        <button type="button" class="btn btn-outline-danger" id="deleteBtn"><i class="bi bi-trash3"></i> Delete User</button>
                     </div>
                 </form>
                 <form action="{{ route('admin.users.delete') }}" method="post" id="deleteForm">
@@ -90,27 +90,37 @@
         </p>
     </div>
 
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-bg-danger">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete the user?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-            document.getElementById('deleteForm').submit();
+        document.getElementById('editBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure you want to edit the user?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, edit'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('editForm').submit();
+                }
+            });
+        });
+
+        document.getElementById('deleteBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure you want to delete the user?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
         });
     </script>
 @endsection

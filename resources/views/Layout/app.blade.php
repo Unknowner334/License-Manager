@@ -45,33 +45,7 @@
     </main>
 
     @include('Layout.footer')
-
-    <div class="modal fade" id="confirmLogoutModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header text-white bg-danger">
-                    <h5 class="modal-title">Confirm Logout</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to log out?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Yes, Logout</button>
-                </div>
-            </div>
-        </div>
-    </div>
     
-    <script>
-        document.getElementById('confirmLogoutBtn').addEventListener('click', function() {
-            document.getElementById('logoutForm').submit();
-        });
-
-        //document.addEventListener('contextmenu', event => event.preventDefault());
-    </script>
-
     <form action="{{ route('logout') }}" method="POST" id="logoutForm">
         @csrf
     </form>                       
@@ -81,6 +55,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.0/sweetalert2.all.min.js" integrity="sha512-0UUEaq/z58JSHpPgPv8bvdhHFRswZzxJUT9y+Kld5janc9EWgGEVGfWV1hXvIvAJ8MmsR5d4XV9lsuA90xXqUQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
         $(".after-card").hide();
         $(document).ready(function () {
             $(".after-card").fadeIn("slow");

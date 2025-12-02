@@ -10,7 +10,7 @@
                 Users Registering
             </div>
             <div class="card-body">
-                <form action={{ route('admin.users.generate.post') }} method="post">
+                <form action={{ route('admin.users.generate.post') }} method="post" id="generateForm">
                     @csrf
                     <div class="row">
                         <div class="col-lg-6">
@@ -70,7 +70,7 @@
                     </div>
 
                     <div class="form-group">
-                        <button class="btn btn-outline-danger">Register User</button>
+                        <button type="button" class="btn btn-outline-danger" id="generateBtn">Register User</button>
                     </div>
                 </form>
             </div>
@@ -79,4 +79,22 @@
             <a href="{{ route('admin.users') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Users</small></a>
         </p>
     </div>
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure you want to register a new user?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, register'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('generateForm').submit();
+                }
+            });
+        });
+    </script>
 @endsection
