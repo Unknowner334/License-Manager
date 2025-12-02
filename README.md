@@ -13,7 +13,7 @@ Composer
 copy .env.example to .env
 setup your db credentials in .env
 run the following commands
-composer install
+composer install --no-dev --optimize-autoloader
 php artisan key:generate
 php artisan migrate:fresh --seed
 and you're ready to host on nginx
