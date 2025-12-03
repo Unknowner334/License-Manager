@@ -6,6 +6,8 @@ use DateTime;
 use app\Models\User;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 abstract class Controller
 {
@@ -37,39 +39,16 @@ abstract class Controller
         }
 
         try {
-            $date = new DateTime($dateString);
-            $now = new DateTime();
-            $diff = $now->diff($date);
-
-            $units = [
-                'y' => 'year',
-                'm' => 'month',
-                'd' => 'day',
-                'h' => 'hour',
-                'i' => 'minute',
-                's' => 'second'
-            ];
-
-            $parts = [];
-            foreach ($units as $key => $label) {
-                $value = $diff->$key;
-                if ($value > 0) {
-                    $parts[] = $value . ' ' . $label . ($value > 1 ? 's' : '');
-                }
-            }
-
-            if (empty($parts)) {
-                return 'N/A';
-            }
-
-            $parts = array_slice($parts, 0, 1);
-
-            return implode(', ', $parts) . ' ago';
+            $date = Carbon::parse($dateString);
+            return $date->diffForHumans([
+                'parts' => 1,
+                'short' => false,
+                'syntax' => Carbon::DIFF_RELATIVE_TO_NOW
+            ]);
         } catch (\Exception $e) {
             return 'N/A';
         }
     }
-
 
     static function censorText($text, $visibleChars = 5, $asterisks = 2) {
         $visible = substr($text, 0, $visibleChars);
@@ -78,13 +57,7 @@ abstract class Controller
     }
 
     static function randomString($length = 10) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $index = rand(0, strlen($characters) - 1);
-            $randomString .= $characters[$index];
-        }
-        return $randomString;
+        return Str::random($length);
     }
 
     static function userUsername($user_id) {
