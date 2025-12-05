@@ -66,7 +66,7 @@ class UserController extends Controller
         $successMessage = Config::get('messages.success.created');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(1);
+        parent::require_ownership(1, 1, 1);
 
         $request->validate([
             'name'     => 'required|string|min:4|max:100',
@@ -130,7 +130,7 @@ class UserController extends Controller
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(1);
+        parent::require_ownership(1, 1, 1);
 
         $request->validate([
             'user_id'  => 'required|string|min:4|max:100|exists:users,user_id',
@@ -214,7 +214,7 @@ class UserController extends Controller
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership();
+        parent::require_ownership(0, 1, 1);
 
         $request->validate([
             'user_id'  => 'required|string|min:4|max:100|exists:users,user_id',
@@ -261,7 +261,7 @@ class UserController extends Controller
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(1);
+        parent::require_ownership(1, 1, 1);
 
         $request->validate([
             'user_id'  => 'required|string|min:4|max:100|exists:users,user_id',
