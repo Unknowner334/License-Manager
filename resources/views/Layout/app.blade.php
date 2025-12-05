@@ -87,6 +87,7 @@
                 title: type,
                 html: message,
                 icon: type.toLowerCase(),
+                confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK'
             });
         };

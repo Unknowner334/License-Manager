@@ -20,14 +20,37 @@ class DashController extends Controller
         return $reff->users->count();
     }
 
-    public function dashboard() {
+    public function licensedata_10() {
         $licenses = License::orderBy('created_at', 'desc')->limit(10)->get();
-        $currency = Config::get('messages.settings.currency');
+
+        $data = $licenses->map(function ($license) {
+            $currency = Config::get('messages.settings.currency');
+            $created = Controller::timeElapsed($license->created_at);
+            $registrar = Controller::userUsername($license->registrar);
+            $licenseName = Controller::censorText($license->license);
+
+            return [
+                'id'        => "<span class='align-middle badge text-dark'>#$license->id</span>",
+                'user_key'  => "<span class='align-middle badge text-dark'>$licenseName</span>",
+                'duration'  => "<span class='align-middle badge text-dark'>$license->duration Days</span>",
+                'devices'   => "<span class='align-middle badge text-primary'>$license->max_devices Devices</span>",
+                'registrar' => "<span class='align-middle badge text-primary'>$registrar</span>",
+                'created'   => "<i class='align-middle badge fw-normal text-muted'>$created</span>",
+            ];
+        });
+
+        return response()->json([
+            'status' => 0,
+            'data'   => $data
+        ]);
+    }
+
+    public function dashboard() {
         $loginTime = session('login_time');
         $sessionLifetime = session('session_lifetime');
         $expiryTime = $loginTime ? $loginTime->copy()->addMinutes($sessionLifetime) : null;
 
-        return view('Home.dashboard', compact('licenses', 'currency', 'expiryTime', 'loginTime', 'sessionLifetime'));
+        return view('Home.dashboard', compact('expiryTime', 'loginTime', 'sessionLifetime'));
     }
 
     public function managereferrable() {

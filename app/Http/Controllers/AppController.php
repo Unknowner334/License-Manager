@@ -209,7 +209,11 @@ class AppController extends Controller
         try {
             $app = App::where('edit_id', $request->input('edit_id'))->firstOrFail();
             $name = $app->name;
-            $app->licenses()->delete();
+            $licenses = $app->licenses()->get();
+
+            foreach ($licenses as $license) {
+                $license->delete();
+            }
 
             return response()->json([
                 'status' => 0,
@@ -234,7 +238,11 @@ class AppController extends Controller
         try {
             $app = App::where('edit_id', $request->input('edit_id'))->firstOrFail();
             $name = $app->name;
-            $app->licenses()->where('registrar', auth()->user()->user_id)->delete();
+            $licenses = $app->licenses()->where('registrar', auth()->user()->user_id)->get();
+
+            foreach ($licenses as $license) {
+                $license->delete();
+            }
 
             return response()->json([
                 'status' => 0,

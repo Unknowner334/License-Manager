@@ -26,6 +26,9 @@ Route::middleware('auth', 'session.timeout', 'no.cache')->group(function () {
     Route::get('/', [DashController::class, 'dashboard']);
     Route::get('/dashboard', [DashController::class, 'dashboard'])->name('dashboard');
 
+    // * Dashboard AJAX
+    Route::get('/dashboard/licenses/data', [DashController::class, 'licensedata_10'])->name('dashboard.licenses.data');
+
     // * Manage Users View
     Route::get('/admin/users', [UserController::class, 'manageusers'])->name('admin.users');
     Route::get('/admin/users/{id?}', [UserController::class, 'manageusersedit'])->where('id', '[0-9a-fA-F-]{36}')->name('admin.users.edit');

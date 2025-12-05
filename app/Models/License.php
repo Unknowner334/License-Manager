@@ -12,6 +12,7 @@ class License extends Model
     protected $table = 'licenses';
 
     protected $fillable = [
+        'edit_id',
         'app_id',
         'owner',
         'license',
@@ -26,7 +27,6 @@ class License extends Model
     ];
 
     protected $hidden = [
-        'edit_id',
         'id',
     ];
 

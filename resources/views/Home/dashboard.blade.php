@@ -12,32 +12,23 @@
         <div class="row">
             <div class="col-lg-8">
                 <div class="card shadow-sm">
-                    <div class="card-header text-white bg-dark">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                         Licenses Registration History
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-outline-light btn-sm ms-1" id="reloadBtn"><i class="bi bi-arrow-clockwise"></i> REFRESH</button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-sm table-bordered table-hover text-center">
-                                @if ($licenses->isNotEmpty())
-                                    @foreach ($licenses as $item)
-                                        <tbody>
-                                            <tr>
-                                                <td><span class="align-middle badge text-dark">#{{ $item->id }}</span></td>
-                                                <td><span class="align-middle badge text-dark">{{ Controller::censorText($item->license) }}</span></td>
-                                                <td><span class="align-middle badge text-dark">{{ $item->duration }} Days</span></td>
-                                                <td><span class="align-middle badge text-primary">{{ Controller::userUsername($item->registrar) }}</span></td>
-                                                <td><span class="align-middle badge text-primary">{{ $item->max_devices }} Devices</span></td>
-                                                <td><i class="align-middle badge fw-normal text-muted">{{ Controller::timeElapsed($item->created_at) }}</i></td>
-                                            </tr>
-                                        </tbody>
-                                    @endforeach
-                                @else
-                                    <thead>
-                                        <tr>
-                                            <th><span class="align-middle badge text-dark fw-normal fs-6">There are no <strong>licenses</strong> to show</span></th>
-                                        </tr>
-                                    </thead>
-                                @endif
+                            <table id="datatable" class="table table-bordered table-hover text-center dataTable no-footer" style="width: 100%;">
+                                <thead>
+                                    <th><span class='align-middle badge text-dark'>#</span></th>
+                                    <th><span class='align-middle badge text-dark'>User License</span></th>
+                                    <th><span class='align-middle badge text-dark'>Duration</span></th>
+                                    <th><span class='align-middle badge text-dark'>Registrar</span></th>
+                                    <th><span class='align-middle badge text-dark'>Devices</span></th>
+                                    <th><span class='align-middle badge text-dark'>Created</span></th>
+                                </thead>
                             </table>
                         </div>
                     </div>
@@ -83,6 +74,35 @@
     </div>
 
     <script>
+        $(document).ready(function() {
+            const table = $('#datatable').DataTable({
+                processing: true,
+                responsive: true,
+                paging: false,
+                info: false,
+                searching: false,
+                lengthChange: false,
+                ordering: false,
+                ajax: {
+                    url: '{{ route('dashboard.licenses.data') }}',
+                    type: 'GET',
+                    dataSrc: 'data'
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'user_key' },
+                    { data: 'duration' },
+                    { data: 'registrar' },
+                    { data: 'devices' },
+                    { data: 'created' },
+                ],
+            });
+
+            $('#reloadBtn').on('click', function () {
+                table.ajax.reload(null, false);
+            });
+        });
+
         function updateLoginTime() {
             const timerElem = document.getElementById('login-timer');
             const loginTimeStr = timerElem.getAttribute('data-logintime');
