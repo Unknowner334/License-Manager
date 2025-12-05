@@ -96,7 +96,8 @@ class LicenseController extends Controller
 
             $currency = Config::get('messages.settings.currency');
             $devices = $this->DevicesHooked($license->devices) . '/' . $license->max_devices;
-            $duration = $license->duration . " Days";
+            $durationC = $this->RemainingDaysColor($this->RemainingDays($license->expire_date));
+            $duration = $this->RemainingDays($license->expire_date) . '/' . $license->duration . " Days";
             $created = Controller::timeElapsed($license->created_at);
             $licenseStatus = Controller::statusColor($license->status);
 
@@ -109,7 +110,7 @@ class LicenseController extends Controller
                 'app'       => $license->app->name,
                 'user_key'  => "<span class='align-middle badge fw-normal text-$licenseStatus fs-6 blur Blur px-3 copy-trigger' data-copy='$license->license'>$license->license</span>",
                 'devices'   => "<span class='align-middle badge fw-normal text-white bg-dark fs-6'>$devices</span>",
-                'duration'  => $duration,
+                'duration'  => "<span class='align-middle badge fw-normal text-$durationC fs-6'>$duration</span>",
                 'registrar' => Controller::userUsername($license->registrar),
                 'created'   => "<i class='align-middle badge fw-normal text-dark fs-6'>$created</i>",
                 'price'     => "$price$currency",
