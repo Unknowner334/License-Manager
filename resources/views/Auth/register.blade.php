@@ -6,8 +6,8 @@
     <div class="col-lg-3 col-md-4 col-sm-5">
         @include('Layout.msgStatus')
         <div class="card mb-5">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <span class="h6 mb-0">Register</span>
+            <div class="card-header text-center text-white bg-dark">
+                Register
             </div>
             <div class="card-body">
                 <form action="{{ route('register.post') }}" method="post">
@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="form-group mb-2">
-                        <button type="submit" class="btn btn-outline-dark"><i class="bi bi-box-arrow-in-right"></i> Register</button>
+                        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-box-arrow-in-right"></i> Register</button>
                     </div>
                 </form>
             </div>

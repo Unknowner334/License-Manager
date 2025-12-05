@@ -156,6 +156,12 @@ class LicenseController extends Controller
         $appName = App::where('app_id', $request->input('app'))->first()->name;
         $saldo_price = $this->saldoPriceCut($duration, $devices);
         $saldo = parent::saldoData(auth()->user()->saldo, auth()->user()->role, 1);
+        if ($saldo_price[0] > $saldo[0]) {
+            return response()->json([
+                'status' => 1,
+                'message' => "You don't have <b>enough</b> Saldo to generate this license.",
+            ]);
+        }
         auth()->user()->deductSaldo($saldo_price[0]);
 
         if (is_int($saldo[0])) {
@@ -241,6 +247,8 @@ class LicenseController extends Controller
             'devices'  => 'required|integer|min:1|max:1000000',
         ]);
 
+        $id = $request->input('edit_id');
+
         if (parent::require_ownership(1, 0)) {
             $license = License::where('edit_id', $request->input('edit_id'))->first();
 
@@ -276,6 +284,27 @@ class LicenseController extends Controller
 
         $now = Carbon::now();
         $expire_date = $now->addDays((int) $request->input('duration'));
+        $currency = Config::get('messages.settings.currency');
+        if ($request->has('duration-update')) {
+            $saldo_price = $this->saldoPriceCut($request->input('duration'), $request->input('devices'));
+        } else {
+            $saldo_price = $this->saldoPriceCut($license->duration, $request->input('devices'));
+        }
+        $saldo = parent::saldoData(auth()->user()->saldo, auth()->user()->role, 1);
+        if (is_int($saldo[0]) && $saldo_price[0] > $saldo[0]) {
+            return response()->json([
+                'status' => 1,
+                'message' => "You don't have <b>enough</b> Saldo to edit this license.",
+            ]);
+        }
+        auth()->user()->deductSaldo($saldo_price[0]);
+
+        if (is_int($saldo[0])) {
+            $saldo_ext = number_format($saldo[0] - $saldo_price[0]);
+            $saldo_ext = $saldo_ext . $currency . " Left";
+        } else {
+            $saldo_ext = $saldo[0];
+        }
 
         try {
             if ($request->has('duration-update')) {
@@ -304,9 +333,16 @@ class LicenseController extends Controller
                 'type'       => 'Update',
             ]);
 
+            $msg = str_replace(':flag', "<b>License</b> " . $licenseName, $successMessage);
+            $saldo_cut = $saldo_price[1];
+            $msg = "
+                $msg <br>
+                <b>Saldo Cut: $saldo_cut$currency</b> <br>
+                <b>Saldo: $saldo_ext</b>
+            ";
             return response()->json([
                 'status' => 0,
-                'message' => str_replace(':flag', "<b>License</b> " . $licenseName, $successMessage),
+                'message' => $msg,
             ]);
         } catch (\Exception $e) {
             return response()->json([

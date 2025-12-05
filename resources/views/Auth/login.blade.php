@@ -6,8 +6,8 @@
     <div class="col-lg-3 col-md-5 col-sm-7">
         @include('Layout.msgStatus')
         <div class="card shadow-sm mb-5">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <span class="h6 mb-0">Login</span>
+            <div class="card-header text-center text-white bg-dark">
+                Login
             </div>
             <div class="card-body">
                 <form action="{{ route('login.post') }}" method="post">
@@ -31,7 +31,7 @@
                     </div>
 
                     <div class="form-group mb-2">
-                        <button type="submit" class="btn btn-outline-dark"><i class="bi bi-box-arrow-in-right"></i> Login</button>
+                        <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-box-arrow-in-right"></i> Login</button>
                     </div>
                 </form>
             </div>

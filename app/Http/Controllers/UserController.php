@@ -183,7 +183,7 @@ class UserController extends Controller
                 $msg <br>
                 <b>Name: $name</b> <br>
                 <b>Username: $username</b> <br>
-                <b>Role: $role</b>
+                <b>Role: $role</b> <br>
                 <b>Status: $status</b>
                 ";
             return response()->json([
