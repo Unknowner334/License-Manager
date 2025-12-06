@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'session.timeout' => \App\Http\Middleware\SessionTimeout::class,
             'no.cache' => \App\Http\Middleware\NoCache::class,
+            'throttle' => \App\Http\Middleware\ThrottleWithSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

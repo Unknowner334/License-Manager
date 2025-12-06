@@ -12,7 +12,7 @@ use App\Http\Controllers\UserController;
 // * Login
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'login_action'])->name('login.post')->middleware('throttle:10,5');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('throttle:50,5');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // * Register
 Route::get('/register', [AuthController::class, 'register'])->name('register');

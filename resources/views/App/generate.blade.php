@@ -83,13 +83,13 @@
                 processData: false,
                 success: function (response) {
                     if (response.status == 0) {
-                        showMessage('Success', response.message);
+                        showPopup('Success', response.message);
                     } else {
-                        showMessage('Error', response.message)
+                        showPopup('Error', response.message)
                     }
                 },
                 error: function (xhr) {
-                    showMessage('Error', xhr.responseJSON.message);
+                    showPopup('Error', xhr.responseJSON.message);
                 }
             });
         });

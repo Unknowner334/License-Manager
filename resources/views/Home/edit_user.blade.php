@@ -124,10 +124,14 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    showMessage('Success', response.message);
+                    if (response.status == 0) {
+                        showMessage('Success', response.message);
+                    } else {
+                        showPopup('Error', response.message);
+                    }
                 },
                 error: function (xhr) {
-                    showMessage('Error', xhr.responseJSON.message);
+                    showPopup('Error', xhr.responseJSON.message);
                 }
             });
         });
@@ -171,11 +175,11 @@
                             window.location.href = "{{ route('admin.users') }}"
                         });
                     } else {
-                        showMessage('Error', response.message);
+                        showPopup('Error', response.message);
                     }
                 },
                 error: function (xhr) {
-                    showMessage('Error', xhr.responseJSON.message);
+                    showPopup('Error', xhr.responseJSON.message);
                 }
             });
         });

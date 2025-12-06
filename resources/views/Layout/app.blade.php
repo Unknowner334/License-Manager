@@ -66,19 +66,21 @@
             });
 
             @if($errors->any())
-                showMessage('Error', @json($errors->first()));
+                @foreach($errors->all() as $error)
+                    showPopup('Error', {!! json_encode($error) !!});
+                @endforeach
             @endif
 
             @if(session()->has('msgSuccess'))
-                showMessage('Success', @json(session('msgSuccess')));
+                showPopup('Success', @json(session('msgSuccess')));
             @endif
 
             @if(session()->has('msgWarning'))
-                showMessage('Warning', @json(session('msgWarning')));
+                showPopup('Warning', @json(session('msgWarning')));
             @endif
 
             @if(session()->has('msgInfo'))
-                showMessage('Info', @json(session('msgInfo')));
+                showPopup('Info', @json(session('msgInfo')));
             @endif
         });
 
@@ -91,6 +93,13 @@
                 confirmButtonText: 'OK'
             });
         };
+
+        function showPopup(type, message) {
+            Toast.fire({
+                html: message,
+                icon: type.toLowerCase(),
+            });
+        }
 
         const Toast = Swal.mixin({
             toast: true,

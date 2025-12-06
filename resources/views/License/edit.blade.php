@@ -163,11 +163,11 @@
                     if (response.status == 0) {
                         showMessage('Success', response.message);
                     } else {
-                        showMessage('Error', response.message);
+                        showPopup('Error', response.message);
                     }
                 },
                 error: function (xhr) {
-                    showMessage('Error', xhr.responseJSON.message);
+                    showPopup('Error', xhr.responseJSON.message);
                 }
             });
         });
@@ -207,11 +207,11 @@
                             window.location.href = "{{ route('licenses') }}"
                         });
                     } else {
-                        showMessage('Error', response.message);
+                        showPopup('Error', response.message);
                     }
                 },
                 error: function (xhr) {
-                    showMessage('Error', xhr.responseJSON.message);
+                    showPopup('Error', xhr.responseJSON.message);
                 }
             });
         });

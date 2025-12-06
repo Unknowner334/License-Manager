@@ -57,7 +57,7 @@ abstract class Controller
         return $visible . $hidden;
     }
 
-    static function randomString($length = 10) {
+    static function randomString($length = 15) {
         return Str::random($length);
     }
 

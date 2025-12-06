@@ -138,11 +138,9 @@
                         break;
                 }
 
-                Swal.fire({
-                    title: icon === "success" ? "Success" : "Failed",
+                Toast.fire({
                     html: message,
                     icon: icon,
-                    showConfirmButton: true,
                 });
             });
         });

@@ -157,13 +157,13 @@
                             processData: false,
                             success: function (response) {
                                 if (response.status == 0) {
-                                    showMessage('Success', response.message);
+                                    showPopup('Success', response.message);
                                 } else {
-                                    showMessage('Error', response.message);
+                                    showPopup('Error', response.message);
                                 }
                             },
                             error: function (xhr) {
-                                showMessage('Error', xhr.responseJSON.message);
+                                showPopup('Error', xhr.responseJSON.message);
                             }
                         });
 
@@ -178,12 +178,12 @@
                 const code = await copyToClipboard(copy);
 
                 let message = "";
-                let type = "Error";
+                let type = "error";
 
                 switch (code) {
                     case 0:
                         message = `<b>License</b> ${copy} <b>Successfully Copied</b>`;
-                        type = "Success";
+                        type = "success";
                         break;
                     case 1:
                         message = "Clipboard API failed.";
@@ -196,7 +196,10 @@
                         break;
                 }
 
-                showMessage(type, message);
+                Toast.fire({
+                    html: message,
+                    icon: type,
+                });
             });
         });
     </script>

@@ -143,7 +143,7 @@ class LicenseController extends Controller
         ]);
 
         do {
-            $license = parent::randomString(16);
+            $license = parent::randomString();
             $licenseExists = License::where('license', $license)->exists();
         } while ($licenseExists);
 
@@ -266,7 +266,7 @@ class LicenseController extends Controller
 
         if ($request->input('license') == '') {
             do {
-                $licenseName = parent::randomString(16);
+                $licenseName = parent::randomString();
                 $licenseExists = License::where('license', $keyName)->exists();
             } while ($licenseExists);
         } else {
