@@ -173,6 +173,10 @@
                 confirmButtonText: 'Yes, delete'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Please wait...'
+                    })
 
                     $('#deleteForm').trigger('submit');
                 }

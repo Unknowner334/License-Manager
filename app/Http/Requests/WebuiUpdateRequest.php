@@ -15,9 +15,9 @@ class WebuiUpdateRequest extends FormRequest
     {
         return [
             'app_name' => 'required|string|max:50',
-            'app_timezone' => 'required|string|timezone',
+            'app_timezone' => 'required|string|in:' . implode(',', timezone_identifiers_list()),
             'currency' => 'required|string|max:10',
-            'currency_place' => 'required|in:0,1',
+            'currency_place' => 'required|in:0,1,2',
         ];
     }
 }

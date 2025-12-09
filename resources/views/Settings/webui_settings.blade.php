@@ -42,7 +42,8 @@
                                 <select name="currency_place" id="currency_place" class="form-control">
                                     @php $place = config('messages.settings.currency_place'); @endphp
                                     <option value="0" @if ($place == 0) selected @endif>Before The price</option>
-                                    <option value="1" @if ($place == 1) selected @endif>After the price</option>
+                                    <option value="2" @if ($place == 2) selected @endif>Before The price with space</option>
+                                    <option value="1" @if ($place == 1) selected @endif>After The price</option>
                                 </select>
                             </div>
                         </div>
@@ -68,6 +69,11 @@
                 confirmButtonText: 'Yes, edit'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Toast.fire({
+                        icon: 'info',
+                        text: "Please wait...",
+                    });
+                    
                     $('#updateForm').trigger('submit');
                 }
             });
@@ -86,7 +92,10 @@
                 processData: false,
                 success: function (response) {
                     if (response.status == 0) {
-                        showPopup('Success', response.message);
+                        $msg = showMessage('Success', response.message);
+                        $msg.then(() => {
+                            window.location.href = "{{ route('settings.webui.index') }}"
+                        });
                     } else {
                         showPopup('Error', response.message);
                     }
