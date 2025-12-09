@@ -56,35 +56,41 @@ Route::middleware('auth', 'session.timeout', 'no.cache')->group(function () {
         });
     });
 
-    Route::get('/settings', [SettingController::class, 'settings'])->name('settings');
-    Route::post('/settings/username-change', [SettingController::class, 'settingsusername'])->name('settings.username');
-    Route::post('/settings/name-change', [SettingController::class, 'settingsname'])->name('settings.name');
-    Route::post('/settings/password-change', [SettingController::class, 'settingspassword'])->name('settings.password');
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingController::class, 'settings'])->name('index');
+        Route::post('/username-change', [SettingController::class, 'settingsusername'])->name('username');
+        Route::post('/name-change', [SettingController::class, 'settingsname'])->name('name');
+        Route::post('/password-change', [SettingController::class, 'settingspassword'])->name('password');
 
-    Route::get('/settings/webui', [WebuiController::class, 'webui_settings'])->name('webui.settings');
+        Route::prefix('webui')->name('webui.')->group(function () {
+            Route::get('/', [WebuiController::class, 'webui_settings'])->name('index');
+        });
+    });
 
-    Route::get('/apps', [AppController::class, 'applist'])->name('apps');
-    Route::get('/apps/{id?}', [AppController::class, 'appedit'])->where('id', '[0-9a-fA-F-]{36}')->name('apps.edit');
-    Route::get('/apps/generate', [AppController::class, 'appgenerate'])->name('apps.generate');
+    Route::prefix('apps')->name('apps.')->group(function () {
+        Route::get('/', [AppController::class, 'applist'])->name('index');
+        Route::get('/{id?}', [AppController::class, 'appedit'])->where('id', '[0-9a-fA-F-]{36}')->name('edit');
+        Route::get('/generate', [AppController::class, 'appgenerate'])->name('generate');
+        Route::get('/data', [AppController::class, 'appdata'])->name('data');
 
-    Route::get('/ajax/apps/data', [AppController::class, 'appdata'])->name('apps.data');
+        Route::post('/update', [AppController::class, 'appedit_action'])->name('edit.post');
+        Route::post('/delete', [AppController::class, 'appdelete'])->name('delete');
+        Route::post('/delete/licenses', [AppController::class, 'appdeletelicenses'])->name('delete.licenses');
+        Route::post('/delete/licenses/user-only', [AppController::class, 'appdeletelicensesme'])->name('delete.licenses.me');
+        Route::post('/generate', [AppController::class, 'appgenerate_action'])->name('generate.post');
+    });
 
-    Route::post('/apps/update', [AppController::class, 'appedit_action'])->name('apps.edit.post');
-    Route::post('/apps/delete', [AppController::class, 'appdelete'])->name('apps.delete');
-    Route::post('/apps/delete/licenses', [AppController::class, 'appdeletelicenses'])->name('apps.delete.licenses');
-    Route::post('/apps/delete/licenses/me', [AppController::class, 'appdeletelicensesme'])->name('apps.delete.licenses.me');
-    Route::post('/apps/generate', [AppController::class, 'appgenerate_action'])->name('apps.generate.post');
+    Route::prefix('licenses')->name('licenses.')->group(function () {
+        Route::get('/', [LicenseController::class, 'licenselist'])->name('index');
+        Route::get('/{id?}', [LicenseController::class, 'licenseedit'])->where('id', '[0-9a-fA-F-]{36}')->name('edit');
+        Route::get('/generate', [LicenseController::class, 'licensegenerate'])->name('generate');
+        Route::get('/data', [LicenseController::class, 'licensedata'])->name('data');
+        Route::get('/resetApiKey/{id?}', [LicenseController::class, 'licenseresetapi'])->where('id', '[0-9a-fA-F-]{36}')->name('resetApiKey');
 
-    Route::get('/licenses', [LicenseController::class, 'licenselist'])->name('licenses');
-    Route::get('/licenses/{id?}', [LicenseController::class, 'licenseedit'])->where('id', '[0-9a-fA-F-]{36}')->name('licenses.edit');
-    Route::get('/licenses/generate', [LicenseController::class, 'licensegenerate'])->name('licenses.generate');
-
-    Route::get('/ajax/licenses/data', [LicenseController::class, 'licensedata'])->name('licenses.data');
-
-    Route::get('/licenses/resetApiKey/{id?}', [LicenseController::class, 'licenseresetapi'])->where('id', '[0-9a-fA-F-]{36}')->name('licenses.resetApiKey');
-    Route::post('/licenses/update', [LicenseController::class, 'licenseedit_action'])->name('licenses.edit.post');
-    Route::post('/licenses/delete', [LicenseController::class, 'licensedelete'])->name('licenses.delete');
-    Route::post('/licenses/generate', [LicenseController::class, 'licensegenerate_action'])->name('licenses.generate.post');
+        Route::post('/update', [LicenseController::class, 'licenseedit_action'])->name('edit.post');
+        Route::post('/delete', [LicenseController::class, 'licensedelete'])->name('delete');
+        Route::post('/generate', [LicenseController::class, 'licensegenerate_action'])->name('generate.post');
+    });
 });
 
 // ! Fallback

@@ -103,7 +103,7 @@
             </div>
         </div>
         <p class="text-muted text-center">
-            <a href="{{ route('licenses') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Licenses</small></a>
+            <a href="{{ route('licenses.index') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Licenses</small></a>
         </p>
     </div>
 

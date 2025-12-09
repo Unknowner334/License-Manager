@@ -8,10 +8,10 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 px-2">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href={{ route('licenses') }}><i class="bi bi-key"></i> Licenses</a>
+                        <a class="nav-link text-white" href={{ route('licenses.index') }}><i class="bi bi-key"></i> Licenses</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href={{ route('apps') }}><i class="bi bi-terminal"></i> Apps</a>
+                        <a class="nav-link text-white" href={{ route('apps.index') }}><i class="bi bi-terminal"></i> Apps</a>
                     </li>
                 </ul>
                 <div class="float-right">
@@ -42,13 +42,13 @@
                                     </li>
                                 @endif
                                 <li>
-                                    <a class="dropdown-item" href={{ route('settings') }}>
+                                    <a class="dropdown-item" href={{ route('settings.index') }}>
                                         <i class="bi bi-gear"></i> Settings
                                     </a>
                                 </li>
                                 @if (auth()->user()->role != "Reseller")
                                     <li>
-                                        <a class="dropdown-item" href={{ route('webui.settings') }}>
+                                        <a class="dropdown-item" href={{ route('settings.webui.index') }}>
                                             <i class="bi bi-gear"></i> Web UI Settings
                                         </a>
                                     </li>

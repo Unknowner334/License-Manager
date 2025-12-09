@@ -69,7 +69,7 @@
             </div>
         </div>
         <p class="text-muted text-center">
-            <a href="{{ route('apps') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Apps</small></a>
+            <a href="{{ route('apps.index') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Apps</small></a>
         </p>
     </div>
 
@@ -155,7 +155,7 @@
                     if (response.status == 0) {
                         const msg = showMessage('Success', response.message);
                         msg.then(() => {
-                            window.location.href = "{{ route('apps') }}"
+                            window.location.href = "{{ route('apps.index') }}"
                         });
                     } else {
                         showPopup('Error', response.message);

@@ -112,7 +112,7 @@
             </div>
         </div>
         <p class="text-muted text-center">
-            <a href="{{ route('licenses') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Licenses</small></a>
+            <a href="{{ route('licenses.index') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Licenses</small></a>
         </p>
     </div>
 
@@ -194,7 +194,7 @@
                     if (response.status == 0) {
                         const msg = showMessage('Success', response.message);
                         msg.then(() => {
-                            window.location.href = "{{ route('licenses') }}"
+                            window.location.href = "{{ route('licenses.index') }}"
                         });
                     } else {
                         showPopup('Error', response.message);
