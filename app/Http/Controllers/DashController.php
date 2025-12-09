@@ -25,9 +25,9 @@ class DashController extends Controller
 
         $data = $licenses->map(function ($license) {
             $currency = Config::get('messages.settings.currency');
-            $created = Controller::timeElapsed($license->created_at);
-            $registrar = Controller::userUsername($license->registrar);
-            $licenseName = Controller::censorText($license->license);
+            $created = timeElapsed($license->created_at);
+            $registrar = userUsername($license->registrar);
+            $licenseName = censorText($license->license);
 
             return [
                 'id'        => "<span class='align-middle badge text-dark'>#$license->id</span>",
@@ -54,19 +54,19 @@ class DashController extends Controller
     }
 
     public function managereferrable() {
-        parent::require_ownership();
+        require_ownership();
         
         return view('Home.manage_reff');
     }
 
     public function managereferrabledata() {
-        parent::require_ownership();
+        require_ownership();
         
         $reffs = Reff::get();
 
         $data = $reffs->map(function ($reff) {
-            $created = Controller::timeElapsed($reff->created_at);
-            $reffStatus = Controller::statusColor($reff->status);
+            $created = timeElapsed($reff->created_at);
+            $reffStatus = statusColor($reff->status);
             $users = 0;
 
             foreach($reff->users as $user) {
@@ -78,7 +78,7 @@ class DashController extends Controller
                 'edit_id'   => $reff->edit_id,
                 'code'      => "<span class='align-middle badge fw-normal text-$reffStatus fs-6 blur Blur px-3 copy-trigger' data-copy='$reff->code'>$reff->code</span>",
                 'status'    => "<span class='align-middle badge fw-normal text-$reffStatus fs-6'>$reff->status</span>",
-                'registrar' => Controller::userUsername($reff->registrar),
+                'registrar' => userUsername($reff->registrar),
                 'created'   => "<i class='align-middle badge fw-normal text-dark fs-6'>$created</i>",
                 'users'     => $users . " Users",
             ];
@@ -93,7 +93,7 @@ class DashController extends Controller
     public function managereferrablegenerate() {
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership();
+        require_ownership();
 
         return view('Home.generate_reff');
     }
@@ -102,7 +102,7 @@ class DashController extends Controller
         $successMessage = Config::get('messages.success.created');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(0, 1, 1);
+        require_ownership(0, 1, 1);
 
         $request->validate([
             'status'   => 'required|in:Active,Inactive',
@@ -110,7 +110,7 @@ class DashController extends Controller
 
         if ($request->input('code') == '') {
             do {
-                $code = parent::randomString(16);
+                $code = randomString();
                 $codeExists = Reff::where('code', $code)->exists();
             } while ($codeExists);
         } else {
@@ -150,7 +150,7 @@ class DashController extends Controller
         $errorMessage = Config::get('messages.error.validation');
         $reff = Reff::where('edit_id', $id)->first();
 
-        parent::require_ownership();
+        require_ownership();
 
         if (empty($reff)) {
             return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
@@ -163,7 +163,7 @@ class DashController extends Controller
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(0, 1, 1);
+        require_ownership(0, 1, 1);
 
         $request->validate([
             'edit_id'  => 'required|string|min:4|max:36|exists:referrable_codes,edit_id',
@@ -217,7 +217,7 @@ class DashController extends Controller
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(0, 1, 1);
+        require_ownership(0, 1, 1);
 
         $request->validate([
             'edit_id'  => 'required|string|min:4|max:36|exists:referrable_codes,edit_id',

@@ -18,6 +18,8 @@ class WebuiUpdateRequest extends FormRequest
             'app_timezone' => 'required|string|in:' . implode(',', timezone_identifiers_list()),
             'currency' => 'required|string|max:10',
             'currency_place' => 'required|in:0,1,2',
+            'source' => 'required|in:DISCORD,TELEGRAM,YOUTUBE',
+            'source_link' => 'required|string',
         ];
     }
 }

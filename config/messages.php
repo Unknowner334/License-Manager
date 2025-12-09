@@ -23,5 +23,7 @@ return [
     'settings' => [
         'currency' => env('MESSAGES_CURRENCY', '$'),
         'currency_place' => env('MESSAGES_CURRENCY_PLACE', '0'),
+        'source_link' => env('SOURCE_LINK', '#'),
+        'source' => env('SOURCE', 'DISCORD'),
     ],
 ];

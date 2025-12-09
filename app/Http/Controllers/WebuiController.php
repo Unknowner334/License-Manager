@@ -12,16 +12,13 @@ class WebuiController extends Controller
     }
 
     public function webui_action(WebuiUpdateRequest $request) {
-        $data = $request->validated();
-
-        setSetting('app_name', $data['app_name']);
-        setSetting('app_timezone', $data['app_timezone']);
-        setSetting('currency', $data['currency']);
-        setSetting('currency_place', $data['currency_place']);
+        foreach ($request->validated() as $key => $value) {
+            setSetting($key, $value);
+        }
 
         return response()->json([
             'status' => 0,
-            'message' => 'WebUI settings updated successfully.'
+            'message' => '<b>WebUI</b> Settings <b>Successfully</b> Updated.'
         ]);
     }
 }

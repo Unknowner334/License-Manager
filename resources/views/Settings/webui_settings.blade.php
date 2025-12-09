@@ -49,6 +49,27 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group mb-3">
+                                <label for="source_link" class="form-label">Source Link</label>
+                                <input type="text" name="source_link" id="source_link" class="form-control" required placeholder="Source Link" value="{{ config('messages.settings.source_link') }}">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="form-group mb-3">
+                                <label for="source" class="form-label">Source</label>
+                                <select name="source" id="source" class="form-control">
+                                    @php $source = config('messages.settings.source'); @endphp
+                                    <option value="DISCORD" @if ($source == "DISCORD") selected @endif>Discord</option>
+                                    <option value="TELEGRAM" @if ($source == "TELEGRAM") selected @endif>Telegram</option>
+                                    <option value="YOUTUBE" @if ($source == "YOUTUBE") selected @endif>Youtube</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <button type="button" class="btn btn-outline-secondary" id="updateBtn">Update WebUI Settings</button>
                     </div>

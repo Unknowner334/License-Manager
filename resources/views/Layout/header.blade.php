@@ -21,8 +21,8 @@
                                 <i class="bi bi-person-circle pe-2"></i>{{ auth()->user()->name }}</a>
                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start" aria-labelledby="navbarDropdown">
                                 <li>
-                                    <a class="dropdown-item" href="">
-                                        <i class="bi bi-discord"></i> DISCORD
+                                    <a class="dropdown-item" href="{{ config('messages.settings.source_link') }}">
+                                        <i class="bi bi-{{ strtolower(config('messages.settings.source')) }}"></i> {{ config('messages.settings.source') }}
                                     </a>
                                 </li>
                                 <li>
