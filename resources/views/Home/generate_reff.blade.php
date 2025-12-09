@@ -33,7 +33,7 @@
             </div>
         </div>
         <p class="text-muted text-center">
-            <a href="{{ route('admin.referrable') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Referrables</small></a>
+            <a href="{{ route('admin.referrable.index') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Referrables</small></a>
         </p>
     </div>
 

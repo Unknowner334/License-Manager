@@ -11,7 +11,7 @@ use App\Models\User;
 class SettingController extends Controller
 {
     public function settings() {
-        return view('Home.settings');
+        return view('Settings.settings');
     }
 
     public function settingsusername(Request $request) {

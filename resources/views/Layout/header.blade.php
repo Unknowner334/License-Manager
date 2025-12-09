@@ -31,12 +31,12 @@
                                 <li class="dropdown-item text-muted">{{ auth()->user()->name }} ({{ auth()->user()->username }})</li>
                                 @if (auth()->user()->role != "Reseller")
                                     <li>
-                                        <a class="dropdown-item" href={{ route('admin.users') }}>
+                                        <a class="dropdown-item" href={{ route('admin.users.index') }}>
                                             <i class="bi bi-person"></i> Manage Users
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href={{ route('admin.referrable') }}>
+                                        <a class="dropdown-item" href={{ route('admin.referrable.index') }}>
                                             <i class="bi bi-person-add"></i> Manage Referrable Code
                                         </a>
                                     </li>

@@ -86,7 +86,7 @@
             </div>
         </div>
         <p class="text-muted text-center">
-            <a href="{{ route('admin.users') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Users</small></a>
+            <a href="{{ route('admin.users.index') }}" class="py-1 px-2 bg-white text-muted"><small><i class="bi bi-arrow-left"></i> Back to Users</small></a>
         </p>
     </div>
 
@@ -172,7 +172,7 @@
                     if (response.status == 0) {
                         const msg = showMessage('Success', response.message);
                         msg.then(() => {
-                            window.location.href = "{{ route('admin.users') }}"
+                            window.location.href = "{{ route('admin.users.index') }}"
                         });
                     } else {
                         showPopup('Error', response.message);

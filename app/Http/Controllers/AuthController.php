@@ -82,7 +82,7 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         $successMessage = Config::get('messages.success.logged_out');
 
-        return redirect('/login')->with('msgSuccess', $successMessage);
+        return redirect(route('login'))->with('msgSuccess', $successMessage);
     }
 
     public function register() {
@@ -105,9 +105,7 @@ class AuthController extends Controller
         $reff = Reff::where('code', $referrable)->where('status', 'Active')->first();
 
         if (!$reff) {
-            return back()->withErrors([
-                'username' => $errorMessage,
-            ])->onlyInput('username');
+            return back()->withErrors(['username' => $errorMessage,])->onlyInput('username');
         }
 
         $name = $request->input('name');
@@ -122,16 +120,11 @@ class AuthController extends Controller
                 'password' => $password,
                 'reff'     => $reff,
             ]);
-            return redirect()->intended('register')
-                ->with('msgSuccess', $successMessage);
+            return redirect(route('register'))->with('msgSuccess', $successMessage);
         } catch (Exception $e) {
-            return back()->withErrors([
-                'username' => $errorMessage,
-            ])->onlyInput('username');
+            return back()->withErrors(['username' => $errorMessage,])->onlyInput('username');
         }
 
-        return back()->withErrors([
-            'username' => $errorMessage,
-        ])->onlyInput('username');
+        return back()->withErrors(['username' => $errorMessage,])->onlyInput('username');
     }
 }

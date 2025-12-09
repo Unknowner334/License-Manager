@@ -84,7 +84,7 @@
                 lengthChange: false,
                 ordering: false,
                 ajax: {
-                    url: '{{ route('dashboard.licenses.data') }}',
+                    url: '{{ route('dashboard.data') }}',
                     type: 'GET',
                     dataSrc: 'data'
                 },

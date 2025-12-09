@@ -14,7 +14,7 @@
                 Users History
                 <div class="d-flex align-items-center gap-2">
                     <button class="btn btn-outline-light btn-sm ms-1" id="reloadBtn"><i class="bi bi-arrow-clockwise"></i> REFRESH</button>
-                    <a class="btn btn-outline-light btn-sm" href={{ route('admin.users') }}><i class="bi bi-person"></i> BACK</a>
+                    <a class="btn btn-outline-light btn-sm" href={{ route('admin.users.index') }}><i class="bi bi-person"></i> BACK</a>
                     <button class="btn btn-secondary btn-sm ms-1" id="blur-out" data-bs-toggle="tooltip" data-bs-placement="top" title="Eye Protect"><i class="bi bi-eye-slash"></i></button>
                 </div>
             </div>
