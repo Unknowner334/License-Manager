@@ -6,11 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use App\Models\User;
 use App\Models\UserHistory;
-use Illuminate\Validation\Rule;
+use App\Http\Requests\UserGenerateRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Helpers\UserHelper;
 
 class UserController extends Controller
 {
-    public function manageusers(Request $request) {
+    public function manageusers() {
         require_ownership(1);
 
         return view('Home.manage_users');
@@ -62,47 +64,10 @@ class UserController extends Controller
         return view('Home.generate_user');
     }
 
-    public function manageusersgenerate_action(Request $request) {
-        $successMessage = Config::get('messages.success.created');
-        $errorMessage = Config::get('messages.error.validation');
+    public function manageusersgenerate_action(UserGenerateRequest $request) {
+        $request->validated();
 
-        require_ownership(1, 1, 1);
-
-        $request->validate([
-            'name'     => 'required|string|min:4|max:100',
-            'username' => 'required|string|min:4|max:50|unique:users,username',
-            'password' => 'required|string|confirmed|min:8|max:50',
-            'status'   => 'required|in:Active,Inactive',
-            'role'     => 'required|in:Owner,Manager,Reseller',
-        ]);
-
-        manager_limit($request->input('role'));
-
-        $username = $request->input('username');
-        $name = $request->input('name');
-        $role = $request->input('role');
-
-        try {
-            User::create([
-                'name'        => $request->input('name'),
-                'username'    => $request->input('username'),
-                'password'    => $request->input('password'),
-                'status'      => $request->input('status'),
-                'role'        => $request->input('role'),
-                'registrar'   => auth()->user()->user_id,
-            ]);
-
-            $msg = str_replace(':flag', "<strong>User</strong> $username", $successMessage);
-            return response()->json([
-                'status' => 0,
-                'message' => $msg,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 1,
-                'message' => str_replace(':info', 'Error Code 202', $errorMessage),
-            ]);
-        }
+        return UserHelper::userGenerate($request);
     }
 
     public function manageusersedit($id) {
@@ -120,66 +85,10 @@ class UserController extends Controller
         return view('Home.edit_user', compact('user'));
     }
 
-    public function manageusersedit_action(Request $request) {
-        $successMessage = Config::get('messages.success.updated');
-        $errorMessage = Config::get('messages.error.validation');
+    public function manageusersedit_action(UserUpdateRequest $request) {
+        $request->validated();
 
-        require_ownership(1, 1, 1);
-
-        $request->validate([
-            'user_id'  => 'required|string|min:4|max:100|exists:users,user_id',
-            'name'     => 'required|string|min:4|max:100',
-            'status'   => 'required|in:Active,Inactive',
-            'role'     => 'required|in:Owner,Manager,Reseller',
-        ]);
-
-        $username = $request->input('username');
-        $user = User::where('user_id', $request->input('user_id'))->first();
-
-        $request->validate([
-            'username' => 'required|string|min:4|max:50',Rule::unique('users', 'username')->ignore($user->user_id, 'user_id'),
-        ]);
-
-        if (empty($user)) {
-            return back()->withErrors(['name' => str_replace(':info', 'Error Code 203', $errorMessage),])->onlyInput('name');
-        }
-
-        manager_limit($user->role);
-        psueAction($user);
-
-        try {
-            if ($request->has('new_password')) {
-                $request->validate([
-                    'password' => 'required|string|confirmed|min:8|max:50',
-                ]);
-
-                $user->update([
-                    'name'        => $request->input('name'),
-                    'username'    => $request->input('username'),
-                    'password'    => $request->input('password'),
-                    'status'      => $request->input('status'),
-                    'permissions' => $request->input('role'),
-                ]);
-            } else {
-                $user->update([
-                    'name'        => $request->input('name'),
-                    'username'    => $request->input('username'),
-                    'status'      => $request->input('status'),
-                    'permissions' => $request->input('role'),
-                ]);
-            }
-
-            $msg = str_replace(':flag', "<strong>User</strong> $username", $successMessage);
-            return response()->json([
-                'status' => 0,
-                'message' => $msg,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 1,
-                'message' => str_replace(':info', 'Error Code 202', $errorMessage),
-            ]);
-        }
+        return UserHelper::userEdit($request);
     }
 
     public function manageuserssaldoedit($id) {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use App\Models\App;
 use App\Models\AppHistory;
@@ -12,7 +11,7 @@ use App\Http\Requests\AppEditRequest;
 
 class AppController extends Controller
 {
-    public function applist(Request $request) {
+    public function applist() {
         return view('App.list');
     }
 

@@ -1,111 +1,94 @@
 <?php
 
+namespace App\Helpers;
+
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Config;
 use App\Models\User;
+use Illuminate\Validation\Rule;
 
-function require_ownership($allow_manager = 0, $fail = 1, $json_response = 0) {
-    $user = auth()->user();
-    $errorMessage = Config::get('messages.error.validation');
+class UserHelper
+{
+    static function userGenerate($request) {
+        $successMessage = Config::get('messages.success.created');
+        $errorMessage = Config::get('messages.error.validation');
 
-    if (!$user) {
-        throw new HttpResponseException(
-            response()->json([
-                'status' => 1,
-                'message' => 'Unauthorized.'
-            ], 401)
-        );
-    }
-
-    if ($user->role === "Owner") return true;
-    if ($allow_manager == 1 && $user->role === "Manager") return true;
-
-    $finalMessage = str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage);
-
-    if ($json_response == 1) {
-        throw new HttpResponseException(
-            response()->json([
-                'status' => 1,
-                'message' => $finalMessage
-            ], 403)
-        );
-    }
-
-    if ($fail == 1) {
-        throw new HttpResponseException(
-            back()->withErrors([
-                'name' => $finalMessage
-            ])->onlyInput('name')
-        );
-    }
-}
-
-function manager_limit($role) {
-    if (auth()->user()->role === "Manager") {
-        if ($role === "Owner") {
-            throw new HttpResponseException(
-                back()->withErrors([
-                    'name' => '<b>You</b> cannot <b>register</b>, <b>edit</b>, or <b>delete</b> a user with a <b>higher</b> role than yours.'
-                ])->onlyInput('name')
-            );
-            return false;
-        }
-    }
-
-    return true;
-}
-
-function psueAction($user) {
-    if ($user->user_id == auth()->user()->user_id && $user->id == auth()->user()->id) {
-        throw new HttpResponseException(
-            back()->withErrors([
-                'name' => 'The selected <b>user</b> is the same as the currently <b>logged-in</b> user.'
-            ])->onlyInput('name')
-        );
-        return false;
-    }
-
-    return true;
-}
-
-function saldoData($userSaldo, $userRole, $raw = 0) {
-    $currency = Config::get('messages.settings.currency');
-    $cplace = Config::get('messages.settings.currency_place');
-    if ($userSaldo >= 2000000000 || $userRole == "Owner") {
-        if ($raw === 1) {
-            $saldo = "Unlimited";
-        } else {
-            $saldo = "∾";
-        }
-        $saldo_color = "primary";
-    } else {
-        if ($raw === 1) {
-            $saldo = $userSaldo;
-        } else {
-            if ($cplace == 0) {
-                $saldo = number_format($userSaldo) . $currency;
-            } else if ($cplace == 1) {
-                $saldo = $currency . number_format($userSaldo);
-            } else {
-                $saldo = number_format($userSaldo) . ' ' . $currency;
-            }
+        try {
+            manager_limit($request->input('role'));
+            $username = $request->input('username');
             
-        }
-        if ($userSaldo <= 100) {
-            $saldo_color = "danger";
-        } else if ($userSaldo <= 1000) {
-            $saldo_color = "warning";
-        } else {
-            $saldo_color = "success";
+            User::create([
+                'name'        => $request->input('name'),
+                'username'    => $request->input('username'),
+                'password'    => $request->input('password'),
+                'status'      => $request->input('status'),
+                'role'        => $request->input('role'),
+                'registrar'   => auth()->user()->user_id,
+            ]);
+
+            $msg = str_replace(':flag', "<strong>User</strong> $username", $successMessage);
+            return response()->json([
+                'status' => 0,
+                'message' => $msg,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 1,
+                'message' => str_replace(':info', 'Error Code 202', $errorMessage),
+            ]);
         }
     }
 
-    $data = [$saldo, $saldo_color];
+    static function userEdit($request) {
+        $successMessage = Config::get('messages.success.created');
+        $errorMessage = Config::get('messages.error.validation');
 
-    return $data;
-}
+        try {
+            $username = $request->input('username');
+            $user = User::where('user_id', $request->input('user_id'))->first();
 
-function userUsername($user_id) {
-    $user = User::where('user_id', $user_id)->first();
-    return $user?->username ?? 'N/A';
+            $request->validate([
+                'username' => 'required|string|min:8|max:50',Rule::unique('users', 'username')->ignore($user->user_id, 'user_id'),
+            ]);
+
+            if (empty($user)) {
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 202', $errorMessage),])->onlyInput('name');
+            }
+
+            manager_limit($user->role);
+            psueAction($user);
+
+            if ($request->has('new_password')) {
+                $request->validate([
+                    'password' => 'required|string|confirmed|min:8|max:50',
+                ]);
+
+                $user->update([
+                    'name'        => $request->input('name'),
+                    'username'    => $request->input('username'),
+                    'password'    => $request->input('password'),
+                    'status'      => $request->input('status'),
+                    'permissions' => $request->input('role'),
+                ]);
+            } else {
+                $user->update([
+                    'name'        => $request->input('name'),
+                    'username'    => $request->input('username'),
+                    'status'      => $request->input('status'),
+                    'permissions' => $request->input('role'),
+                ]);
+            }
+
+            $msg = str_replace(':flag', "<strong>User</strong> $username", $successMessage);
+            return response()->json([
+                'status' => 0,
+                'message' => $msg,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 1,
+                'message' => str_replace(':info', 'Error Code 201', $errorMessage),
+            ]);
+        }
+    }
 }
