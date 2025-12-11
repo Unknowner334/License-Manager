@@ -33,7 +33,9 @@
             "app/Helpers/Settings.php",
             "app/Helpers/UserHelper.php",
             "app/Helpers/Colors.php",
-            "app/Helpers/General.php"
+            "app/Helpers/General.php",
+            "app/Helpers/LicenseInfo.php",
+            "app/Helpers/LicenseHelper.php"
         ]
     },
     "autoload-dev": {

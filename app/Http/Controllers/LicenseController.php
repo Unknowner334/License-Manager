@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use App\Helpers\LicenseInfo;
+use App\Helpers\LicenseHelper;
+use App\Http\Requests\LicenseGenerateRequest;
+use App\Http\Requests\LicenseUpdateRequest;
+use App\Http\Requests\LicenseDeleteRequest;
 use App\Models\License;
 use App\Models\LicenseHistory;
 use App\Models\App;
@@ -12,75 +17,7 @@ use Illuminate\Validation\Rule;
 
 class LicenseController extends Controller
 {
-    static function licensePriceCalculator($price, $devices, $duration) {
-        $price = (int) $price;
-        $devices = (int) $devices;
-        $duration = (int) $duration;
-
-        $duration = $duration / 30;
-        $total = $price * $duration * $devices;
-
-        return $total;
-    }
-
-    static function saldoPriceCut($devices, $duration) {
-        $basePrice = 10;
-        $devices = (int) $devices;
-        $duration = (int) $duration;
-
-        $duration = $duration / 30;
-        $total = $basePrice * $duration * $devices;
-        $total = [$total, number_format($total)];
-
-        return $total;
-    }
-
-    static function RemainingDays($expire_date) {
-        if (empty($expire_date)) {
-            return 'N/A';
-        }
-
-        try {
-            $expire = Carbon::parse($expire_date);
-        } catch (\Exception $e) {
-            return 'N/A';
-        }
-
-        $remainingDays = now()->diffInDays($expire, false) + 1;
-        return max(0, (int) $remainingDays);
-    }
-
-    static function RemainingDaysColor($remainingDays) {
-        if ($remainingDays == "N/A") {
-            return "danger";
-        } elseif ($remainingDays <= 10) {
-            return 'danger';
-        } elseif ($remainingDays <= 20) {
-            return 'warning';
-        } elseif ($remainingDays <= 30) {
-            return 'success';
-        } else {
-            return 'success';
-        }
-    }
-
-    static function RankColor($rank) {
-        if ($rank == "Basic" || $rank == "basic") {
-            return "success";
-        } elseif ($rank == "Premium" || $rank == "premium") {
-            return "warning";
-        } else {
-            return "danger";
-        }
-    }
-
-    static function DevicesHooked($serials) {
-        $items = preg_split('/[\s,]+/', trim($serials), -1, PREG_SPLIT_NO_EMPTY);
-        $count = count($items);
-        return $count;
-    }
-
-    public function licenselist(Request $request) {
+    public function licenselist() {
         return view('License.list');
     }
 
@@ -96,13 +33,13 @@ class LicenseController extends Controller
 
             $currency = Config::get('messages.settings.currency');
             $cplace = Config::get('messages.settings.currency_place');
-            $devices = $this->DevicesHooked($license->devices) . '/' . $license->max_devices;
-            $durationC = $this->RemainingDaysColor($this->RemainingDays($license->expire_date));
-            $duration = $this->RemainingDays($license->expire_date) . '/' . $license->duration . " Days";
+            $devices = LicenseInfo::DevicesHooked($license->devices) . '/' . $license->max_devices;
+            $durationC = LicenseInfo::RemainingDaysColor(LicenseInfo::RemainingDays($license->expire_date));
+            $duration = LicenseInfo::RemainingDays($license->expire_date) . '/' . $license->duration . " Days";
             $created = timeElapsed($license->created_at);
             $licenseStatus = statusColor($license->status);
 
-            $price = number_format(LicenseController::licensePriceCalculator($license->app->price, $license->max_devices, $license->duration));
+            $price = number_format(LicenseInfo::licensePriceCalculator($license->app->price, $license->max_devices, $license->duration));
             if ($cplace == 0) {
                 $price = $price . $currency;
             } else if ($cplace == 1) {
@@ -139,101 +76,10 @@ class LicenseController extends Controller
         return view('License.generate', compact('apps', 'currency', 'currencyPlace'));
     }
 
-    public function licensegenerate_action(Request $request) {
-        $successMessage = Config::get('messages.success.created');
-        $errorMessage = Config::get('messages.error.validation');
+    public function licensegenerate_action(LicenseGenerateRequest $request) {
+        $request->validated();
 
-        $request->validate([
-            'app'      => 'required|string|exists:apps,app_id|min:6|max:36',
-            'owner'    => 'max:50',
-            'duration' => 'required|integer',
-            'status'   => 'required|in:Active,Inactive',
-            'devices'  => 'required|integer|min:1|max:1000000',
-        ]);
-
-        do {
-            $license = randomString();
-            $licenseExists = License::where('license', $license)->exists();
-        } while ($licenseExists);
-
-        $now = Carbon::now();
-        $expire_date = $now->addDays((int) $request->input('duration'));
-        $currency = Config::get('messages.settings.currency');
-        $cplace = Config::get('messages.settings.currency_place');
-        $owner = $request->input('owner') ?? "";
-        $duration = $request->input('duration');
-        $status = $request->input('status');
-        $devices = $request->input('devices');
-        $appName = App::where('app_id', $request->input('app'))->first()->name;
-        $saldo_price = $this->saldoPriceCut($duration, $devices);
-        $saldo = saldoData(auth()->user()->saldo, auth()->user()->role, 1);
-        if ($saldo_price[0] > $saldo[0]) {
-            return response()->json([
-                'status' => 1,
-                'message' => "You don't have <b>enough</b> Saldo to generate this license.",
-            ]);
-        }
-        auth()->user()->deductSaldo($saldo_price[0]);
-
-        if (is_int($saldo[0])) {
-            $saldo_ext = number_format($saldo[0] - $saldo_price[0]);
-            if ($cplace == 0) {
-                $saldo_ext = $saldo_ext . $currency . " Left";
-            } else if ($cplace == 1) {
-                $saldo_ext = $currency . $saldo_ext . " Left";
-            } else {
-                $saldo_ext = $saldo_ext . ' ' . $currency . " Left";
-            }
-        } else {
-            $saldo_ext = $saldo[0];
-        }
-
-        $saldo_cut = $saldo_price[1];
-
-        if ($cplace == 0) {
-            $saldo_cut = $saldo_cut . $currency;
-        } else if ($cplace == 1) {
-            $saldo_cut = $currency . $saldo_cut;
-        } else {
-            $saldo_cut = $saldo_cut . ' ' . $currency;
-        }
-
-        try {
-            License::create([
-                'app_id'      => $request->input('app'),
-                'owner'       => $owner,
-                'duration'    => $duration,
-                'expire_date' => $expire_date,
-                'license'     => $license,
-                'status'      => $status,
-                'max_devices' => $devices,
-                'registrar'   => auth()->user()->user_id,
-            ]);
-
-            $licenses = License::where('license', $license)->where('duration', $duration)->where('max_devices', $devices)->first();
-
-            LicenseHistory::create([
-                'license_id' => $licenses->edit_id,
-                'user'   => auth()->user()->user_id,
-                'type'   => 'Create',
-            ]);
-
-            $msg = str_replace(':flag', "<b>License</b> " . $license, $successMessage);
-            $msg = "
-                $msg <br>
-                <b>Saldo Cut: $saldo_cut</b> <br>
-                <b>Saldo: $saldo_ext</b>
-            ";
-            return response()->json([
-                'status' => 0,
-                'message' => $msg,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 1,
-                'message' => str_replace(':info', 'Error Code 201', $errorMessage),
-            ]);
-        }
+        return LicenseHelper::licenseGenerate($request);
     }
 
     public function licenseedit($id) {
@@ -260,19 +106,11 @@ class LicenseController extends Controller
         return view('License.edit', compact('license', 'apps', 'currency', 'currencyPlace'));
     }
 
-    public function licenseedit_action(Request $request) {
+    public function licenseedit_action(LicenseUpdateRequest $request) {
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
-        $request->validate([
-            'edit_id'  => 'required|string|min:6|max:36',
-            'license'  => 'max:50',
-            'app'      => 'required|string|exists:apps,app_id|min:6|max:36',
-            'owner'    => 'max:50',
-            'duration' => 'required|integer',
-            'status'   => 'required|in:Active,Inactive',
-            'devices'  => 'required|integer|min:1|max:1000000',
-        ]);
+        $request->validated();
 
         $id = $request->input('edit_id');
 
@@ -292,7 +130,7 @@ class LicenseController extends Controller
 
         if ($request->input('license') == '') {
             do {
-                $licenseName = parent::randomString();
+                $licenseName = randomString();
                 $licenseExists = License::where('license', $keyName)->exists();
             } while ($licenseExists);
         } else {
@@ -352,31 +190,29 @@ class LicenseController extends Controller
         }
     }
 
-    public function licensedelete(Request $request) {
+    public function licensedelete(LicenseDeleteRequest $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
-        $request->validate([
-            'edit_id'  => 'required|string|min:6|max:36',
-        ]);
-
-        if (require_ownership(1, 0)) {
-            $license = License::where('edit_id', $request->input('edit_id'))->first();
-
-            if (empty($license)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
-            }
-        } else {
-            $license = License::where('registrar', auth()->user()->user_id)->where('edit_id', $request->input('edit_id'))->first();
-
-            if (empty($license)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage),])->onlyInput('name');
-            }
-        }
-
-        $licenseName = $license->license;
+        $request->validated();
 
         try {
+            if (require_ownership(1, 0)) {
+                $license = License::where('edit_id', $request->input('edit_id'))->first();
+
+                if (empty($license)) {
+                    return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
+                }
+            } else {
+                $license = License::where('registrar', auth()->user()->user_id)->where('edit_id', $request->input('edit_id'))->first();
+
+                if (empty($license)) {
+                    return back()->withErrors(['name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage),])->onlyInput('name');
+                }
+            }
+
+            $licenseName = $license->license;
+
             $license->delete();
 
             return response()->json([
@@ -395,23 +231,23 @@ class LicenseController extends Controller
         $successMessage = Config::get('messages.success.reseted');
         $errorMessage = Config::get('messages.error.validation');
 
-        if (require_ownership(1, 0)) {
-            $license = License::where('edit_id', $id)->first();
-
-            if (empty($license)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
-            }
-        } else {
-            $license = License::where('registrar', auth()->user()->user_id)->where('edit_id', $id)->first();
-
-            if (empty($license)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage),])->onlyInput('name');
-            }
-        }
-
-        $licenseName = $license->license;
-
         try {
+            if (require_ownership(1, 0)) {
+                $license = License::where('edit_id', $id)->first();
+
+                if (empty($license)) {
+                    return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
+                }
+            } else {
+                $license = License::where('registrar', auth()->user()->user_id)->where('edit_id', $id)->first();
+
+                if (empty($license)) {
+                    return back()->withErrors(['name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage),])->onlyInput('name');
+                }
+            }
+
+            $licenseName = $license->license;
+
             $license->update([
                 'devices' => NULL,
             ]);
