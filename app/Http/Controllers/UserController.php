@@ -22,16 +22,16 @@ class UserController extends Controller
         $users = User::get();
 
         $data = $users->map(function ($user) {
-            $created = Controller::timeElapsed($user->created_at);
-            $userStatus = Controller::statusColor($user->status);
+            $created = timeElapsed($user->created_at);
+            $userStatus = statusColor($user->status);
             $saldo = saldoData($user->saldo, $user->role);
             $saldoS = $saldo[0];
             $saldoC = $saldo[1];
-            $roleC = Controller::permissionColor($user->role);
+            $roleC = permissionColor($user->role);
 
             if ($user->referrable != NULL) {
-                $reff_status = Controller::statusColor($user->referrable->status);
-                $reff_code = Controller::censorText($user->referrable->code);
+                $reff_status = statusColor($user->referrable->status);
+                $reff_code = censorText($user->referrable->code);
             } else {
                 $reff_status = 'dark';
                 $reff_code = "N/A";
@@ -45,7 +45,7 @@ class UserController extends Controller
                 'created'   => "<i class='align-middle badge fw-normal text-dark fs-6'>$created</i>",
                 'saldo'     => "<span class='align-middle badge fw-normal text-$saldoC fs-6'>$saldoS</span>",
                 'role'      => "<span class='align-middle badge fw-normal text-$roleC fs-6'>$user->role</span>",
-                'registrar' => Controller::userUsername($user->registrar),
+                'registrar' => userUsername($user->registrar),
                 'reff'      => "<span class='align-middle badge fw-normal text-$reff_status fs-6'>$reff_code</span>",
             ];
         });

@@ -20,9 +20,9 @@ class AppController extends Controller
         $data = $apps->map(function ($app) {
             $currency = Config::get('messages.settings.currency');
             $cplace = Config::get('messages.settings.currency_place');
-            $created = Controller::timeElapsed($app->created_at);
+            $created = timeElapsed($app->created_at);
             $price = number_format($app->price);
-            $appStatus = Controller::statusColor($app->status);
+            $appStatus = statusColor($app->status);
             $licenses = 0;
 
             if ($cplace == 0) {
@@ -44,7 +44,7 @@ class AppController extends Controller
                 'ids'       => $ids,
                 'name'      => "<span class='align-middle badge fw-normal text-$appStatus fs-6 px-3'>$app->name</span>",
                 'licenses'  => "$licenses License",
-                'registrar' => Controller::userUsername($app->registrar),
+                'registrar' => userUsername($app->registrar),
                 'created'   => "<i class='align-middle badge fw-normal text-dark fs-6'>$created</i>",
                 'price'     => "$price",
             ];
@@ -59,7 +59,7 @@ class AppController extends Controller
     public function appgenerate() {
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(1);
+        require_ownership(1);
 
         return view('App.generate');
     }
@@ -68,7 +68,7 @@ class AppController extends Controller
         $successMessage = Config::get('messages.success.created');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(1);
+        require_ownership(1);
 
         $request->validate([
             'name'    => 'required|string|unique:apps,name|min:6|max:50',
@@ -119,7 +119,7 @@ class AppController extends Controller
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(1, 1, 1);
+        require_ownership(1, 1, 1);
 
         $request->validate([
             'edit_id' => 'required|string|min:10|max:36',
@@ -182,7 +182,7 @@ class AppController extends Controller
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(1, 1, 1);
+        require_ownership(1, 1, 1);
 
         $request->validate([
             'edit_id' => 'required|string|min:10|max:36',
@@ -209,7 +209,7 @@ class AppController extends Controller
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
 
-        parent::require_ownership(1, 1, 1);
+        require_ownership(1, 1, 1);
 
         $request->validate([
             'edit_id' => 'required|string|min:10|max:36',

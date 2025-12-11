@@ -50,7 +50,7 @@ class AuthController extends Controller
                 'user_agent' => $userAgent,
             ]);
 
-            return redirect()->intended('dashboard')->with('msgSuccess', $successMessage);
+            return redirect(route('dashboard'))->with('msgSuccess', $successMessage);
         }
 
         UserHistory::create([
