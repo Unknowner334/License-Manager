@@ -24,7 +24,7 @@ All rights reserved.
 
 This software and its source code are the property of Karam.
 
-You may use this software publicly and display it with your own name as the creator of the website or project built using this software. 
+You may use this software publicly and display it with your own name as the app name of the website or project built using this software. 
 
 You may NOT:
 - Copy, modify, distribute, or republish this software itself.
