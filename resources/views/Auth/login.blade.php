@@ -3,8 +3,8 @@
 @section('title', 'Login')
 
 @section('content')
-    <main class="flex-1 flex items-center justify-center transition-colors duration-300">
-        <div class="w-full max-w-md bg-dark rounded-xl shadow-lg p-6">
+    <main class="flex-1 flex flex-col items-center justify-center gap-4">
+        <div class="w-full max-w-xs bg-dark rounded-md shadow-lg p-5">
             <h1 class="text-2xl font-semibold text-gray-300 mb-6 text-center">
                 Login
             </h1>
@@ -44,14 +44,18 @@
                 </div>
 
                 <div class="mb-4 flex items-center">
-                    <input id="stay_log" name="stay_log" type="checkbox"
-                        class="w-4 h-4 text-white bg-white border border-gray-300 border-opacity-60 rounded 
-                            focus:ring-2 focus:ring-primary focus:ring-offset-0 
-                            checked:bg-primary checked:border-primary 
-                            checked:before:content-['✔'] checked:before:text-white 
-                            checked:before:text-xs checked:before:flex 
-                            checked:before:items-center checked:before:justify-center 
-                            before:pointer-events-none appearance-none" value="1">
+                    <input
+                        id="stay_log"
+                        name="stay_log"
+                        type="checkbox"
+                        value="1"
+                        class="
+                            w-4 h-4 appearance-none rounded border border-dark-3 bg-dark-4 cursor-pointer checked:bg-primary checked:before:w-full
+                            checked:before:h-full checked:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2
+                            focus:ring-offset-dark checked:before:content-['✔'] checked:before:text-white checked:before:text-xs 
+                            checked:before:flex checked:before:items-center checked:before:justify-center before:pointer-events-none
+                            "
+                    />
                     <label for="stay_log" class="ml-2 text-sm text-gray-300 cursor-pointer">
                         Remember me?
                     </label>
@@ -59,24 +63,26 @@
 
                 <div class="mb-4">
                     <button type="submit" 
-                        class="w-auto p-3 bg-transparent border border-dark-3 hover:bg-secondary 
+                        class="w-auto p-3 bg-transparent border border-dark-3 hover:bg-dark-3
                             text-gray-300 rounded-lg transition-colors duration-100">
                         <i class="bi bi-box-arrow-in-right"></i> Login
                     </button>
                 </div>
 
-                <div class="mb-4 text-center">
+                <div class="text-center">
                     <p class="text-gray-300">
                         Forgot your password? <a href="" class="text-white underline">Click here</a>.
                     </p>
                 </div>
-                
-                <div class="text-center">
-                    <p class="text-gray-300">
-                        Don't have an account yet? <a href="{{ route('register') }}" class="text-white underline">Register here</a>.
-                    </p>
-                </div>
             </form>
+        </div>
+
+        <div class="w-full max-w-xs bg-dark rounded-md shadow-lg p-2">
+            <div class="text-center">
+                <p class="text-gray-300 text-[14px]">
+                    Don't have an account yet? <a href="{{ route('register') }}" class="text-white underline">Register here</a>.
+                </p>
+            </div>
         </div>
     </main>
 

@@ -3,7 +3,9 @@
 @section('title', 'Fallback')
 
 @section('content')
-    <div class="col-lg-12 mt-5">
-        <h1 class="text-center text-danger"><b>Sorry Something went wrong, Please try again later.</b></h1>
-    </div>
+    <main class="flex-1 flex flex-col items-center justify-center gap-4">
+        <h1 class="text-red-600 text-6xl">404</h1>
+        <div class="w-full max-w-lg border border-red-600"></div>
+        <h1 class="text-red-600 text-5xl">Something Went Wrong.</h1>
+    </main>
 @endsection

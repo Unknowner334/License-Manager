@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('referrable_codes', function (Blueprint $table) {
             $table->id();
             $table->uuid('edit_id');
-            $table->string('code')->unique()->max(50);
+            $table->string('code', 50)->unique();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->string('registrar');
             $table->timestamps();
@@ -20,9 +20,10 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->uuid('user_id');
-            $table->string('name')->max(100);
-            $table->string('username')->unique()->max(50);
-            $table->string('password')->max(50)->min(8);
+            $table->string('name', 100);
+            $table->string('username', 50)->unique();
+            $table->string('email')->unique();
+            $table->string('password');
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->enum('role', ['Owner', 'Manager', 'Reseller'])->default('Reseller');
             $table->integer('saldo')->default(10000);
@@ -30,13 +31,14 @@ return new class extends Migration
             $table->string('registrar')->nullable();
             $table->datetime('last_login')->nullable();
             $table->rememberToken();
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
 
         Schema::create('users_history', function (Blueprint $table) {
             $table->id();
             $table->string('user_id')->nullable();
-            $table->string('username')->max(50);
+            $table->string('username', 50);
             $table->enum('status', ['Success', 'Fail'])->default('Success');
             $table->enum('type', ['Login', 'Logout'])->default('Login');
             $table->string('ip_address', 45)->nullable();

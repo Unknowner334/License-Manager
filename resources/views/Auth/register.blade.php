@@ -3,8 +3,8 @@
 @section('title', 'Register')
 
 @section('content')
-    <main class="flex-1 flex items-center justify-center transition-colors duration-300">
-        <div class="w-full max-w-md bg-dark rounded-xl shadow-lg p-6">
+    <main class="flex-1 flex flex-col items-center justify-center gap-4">
+        <div class="w-full max-w-xs bg-dark rounded-md shadow-lg p-5">
             <h1 class="text-2xl font-semibold text-gray-300 mb-6 text-center">
                 Register
             </h1>
@@ -85,20 +85,22 @@
                     </div>
                 </div>
 
-                <div class="mb-4">
+                <div>
                     <button type="submit" 
-                        class="w-auto p-3 bg-transparent border border-dark-3 hover:bg-secondary
+                        class="w-auto p-3 bg-transparent border border-dark-3 hover:bg-dark-3
                             text-gray-300 rounded-lg transition-colors duration-100">
-                        <i class="bi bi-box-arrow-in-right"></i> Register
+                        <i class="bi bi-person-plus"></i> Register
                     </button>
                 </div>
-
-                <div class="text-center">
-                    <p class="text-gray-300">
-                        Already have an account? <a href="{{ route('login') }}" class="text-white underline">Login here</a>.
-                    </p>
-                </div>
             </form>
+        </div>
+
+        <div class="w-full max-w-xs bg-dark rounded-md shadow-lg p-2">
+            <div class="text-center">
+                <p class="text-gray-300">
+                    Already have an account? <a href="{{ route('login') }}" class="text-white underline">Login here</a>.
+                </p>
+            </div>
         </div>
     </main>
 
