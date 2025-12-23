@@ -4,10 +4,6 @@
 
 @section('content')
     <main class="flex-1 flex flex-col items-center mt-15 gap-4">
-        <div class="w-full max-w-xs">
-            @include('Layout.msgStatus')
-        </div>
-
         <div class="w-full max-w-xs bg-white rounded-md shadow-lg p-5">
             <h1 class="text-2xl font-semibold text-dark-text mb-6 text-center">
                 Register

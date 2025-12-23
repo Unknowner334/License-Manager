@@ -28,7 +28,7 @@
 
         <main class="flex-1 p-6">
             <div x-show="activePage==='home'" x-cloak>
-                home
+                @include('Home.home')
             </div>
 
             <div x-show="activePage==='apps'" x-cloak>
