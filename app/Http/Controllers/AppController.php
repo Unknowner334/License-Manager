@@ -11,10 +11,6 @@ use App\Http\Requests\AppEditRequest;
 
 class AppController extends Controller
 {
-    public function applist() {
-        return view('App.list');
-    }
-
     public function appdata() {
         $apps = App::get();
 
@@ -43,10 +39,10 @@ class AppController extends Controller
             return [
                 'id'        => $app->id,
                 'ids'       => $ids,
-                'name'      => "<span class='text-$appStatus px-3'>$app->name</span>",
+                'name'      => "<span class='text-$appStatus text-[16px]'>$app->name</span>",
                 'licenses'  => "$licenses License",
                 'registrar' => userUsername($app->registrar),
-                'created'   => "<i class='text-dark-text'>$created</i>",
+                'created'   => "<i class='text-gray-400'>$created</span>",
                 'price'     => "$price",
             ];
         });
@@ -57,34 +53,15 @@ class AppController extends Controller
         ]);
     }
 
-    public function appgenerate() {
-        $errorMessage = Config::get('messages.error.validation');
-
-        require_ownership(1);
-
-        return view('App.generate');
-    }
-
-    public function appgenerate_action(AppGenerateRequest $request) {
-        require_ownership(1);
+    public function appregister(AppGenerateRequest $request) {
+        require_ownership(1, 0, 1);
 
         $request->validated();
 
         return AppHelper::appGenerate($request);
     }
 
-    public function appedit($id) {
-        $errorMessage = Config::get('messages.error.validation');
-        $app = App::where('edit_id', $id)->first();
-
-        if (empty($app)) {
-            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
-        }
-
-        return view('App.edit', compact('app'));
-    }
-
-    public function appedit_action(AppEditRequest $request) {
+    public function appedit(AppEditRequest $request) {
         $request->validated();
 
         return AppHelper::appEdit($request);

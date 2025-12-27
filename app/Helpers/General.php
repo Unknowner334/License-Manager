@@ -94,11 +94,11 @@ function saldoData($userSaldo, $userRole, $raw = 0) {
             
         }
         if ($userSaldo <= 100) {
-            $saldo_color = "red";
+            $saldo_color = "red-600";
         } else if ($userSaldo <= 1000) {
-            $saldo_color = "yellow";
+            $saldo_color = "yellow-300";
         } else {
-            $saldo_color = "green";
+            $saldo_color = "green-600";
         }
     }
 

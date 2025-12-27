@@ -5,12 +5,12 @@
 @section('content')
     <main class="flex-1 flex flex-col items-center mt-15 gap-4">
         <div>
-            <div class="w-full max-w-xs bg-dark rounded-t-md shadow-lg px-5 py-2">
-                <h1 class="text-[20px] font-semibold text-white">
+            <div class="w-full max-w-xs bg-dark rounded-t shadow px-5 py-2 text-center">
+                <h1 class="text-lg text-white">
                     Register
                 </h1>
             </div>
-            <div class="w-full max-w-xs bg-white rounded-b-md shadow-lg p-5">
+            <div class="w-full max-w-xs bg-white rounded-b shadow p-5">
                 <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                     @csrf
                     @honeypot
@@ -111,7 +111,7 @@
         </div>
 
         <div>
-            <div class="w-full max-w-xs bg-white rounded-md shadow-md p-2">
+            <div class="w-full max-w-xs bg-white rounded shadow p-2">
                 <div class="text-center">
                     <p class="text-dark-text text-[15px]">
                         Already have an account? <a href="{{ route('login') }}" class="text-primary underline">Login here</a>.

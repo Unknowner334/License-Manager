@@ -34,6 +34,7 @@ Route::middleware('auth', 'session.timeout', 'no.cache')->group(function () {
     Route::prefix('API/private')->name('api.private.')->group(function () {
         Route::get('/home/licenses', [DashController::class, 'licensedata_10'])->name('home.registrations');
         Route::get('/apps/data', [AppController::class, 'appdata'])->name('apps.registrations');
+        Route::post('/apps/register', [AppController::class, 'appregister'])->name('apps.register');
     });
 });
 

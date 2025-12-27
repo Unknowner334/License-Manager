@@ -7,12 +7,12 @@
             x-data="{ forgot: JSON.parse(sessionStorage.getItem('forgotYourPassword') || 'false') }"
             x-init="$watch('forgot', value => sessionStorage.setItem('forgotYourPassword', value))">
         <div x-show="!forgot" x-cloak>
-            <div class="w-full max-w-xs bg-dark rounded-t-md shadow-lg px-5 py-3">
-                <h1 class="text-[20px] font-semibold text-white">
+            <div class="w-full max-w-xs bg-dark rounded-t shadow px-5 py-2 text-center">
+                <h1 class="text-lg text-white">
                     Login
                 </h1>
             </div>
-            <div class="w-full max-w-xs bg-white rounded-b-md shadow-lg p-5">
+            <div class="w-full max-w-xs bg-white rounded-b shadow p-5">
                 <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                     @csrf
                     @honeypot
@@ -85,7 +85,7 @@
         </div>
 
         <div x-show="!forgot" x-cloak>
-            <div class="w-full max-w-xs bg-white rounded-md shadow-md p-2">
+            <div class="w-full max-w-xs bg-white rounded shadow-md p-2">
                 <div class="text-center">
                     <p class="text-dark-text text-[14px]">
                         Don't have an account yet? <a href="{{ route('register') }}" class="text-primary underline">Register here</a>.
@@ -94,13 +94,13 @@
             </div>
         </div>
 
-        <div x-show="forgot" x-cloak class="mt-20">
-            <div class="w-full max-w-xs bg-dark rounded-t-md shadow-lg px-5 py-3">
-                <h1 class="text-[20px] font-semibold text-white">
+        <div x-show="forgot" x-cloak>
+            <div class="w-full max-w-xs bg-dark rounded-t shadow px-5 py-2 text-center">
+                <h1 class="text-lg text-white">
                     Forgot your password?
                 </h1>
             </div>
-            <div class="w-full max-w-xs bg-white rounded-b-md shadow-lg p-5">
+            <div class="w-full max-w-xs bg-white rounded-b shadow p-5">
                 <form action="{{ route('login.forgot') }}" method="POST" class="space-y-4" id="forgotPasswordForm">
                     @csrf
                     @honeypot
@@ -125,7 +125,7 @@
         </div>
 
         <div x-show="forgot" x-cloak>
-            <div class="w-full max-w-xs bg-white rounded-md shadow-md px-6 py-2">
+            <div class="w-full max-w-xs bg-white rounded shadow px-6 py-2">
                 <div class="text-center">
                     <p class="text-dark-text text-[16px]">
                         Going back to login? 

@@ -4,12 +4,20 @@
             <h1 class="text-md text-white mb-0">
                 Apps Registered
             </h1>
-            <button id="reloadBtnApps" 
-                    class="bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
-                    rounded shadow transition duration-200 flex items-center gap-2">
-                <i class="bi bi-arrow-clockwise"></i>
-                Refresh
-            </button>
+            <div class="flex gap-2">
+                <button id="reloadBtnApps" 
+                        class="bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
+                        rounded shadow transition duration-200 flex items-center gap-2">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Refresh
+                </button>
+                <button id="createBtnApps" 
+                        class="bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
+                        rounded shadow transition duration-200 flex items-center gap-2">
+                    <i class="bi bi-terminal"></i>
+                    App
+                </button>
+            </div>
         </div>
 
         <div class="overflow-auto relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 bg-white rounded-b shadow p-5">
@@ -47,12 +55,44 @@
 <script>
     let apps_table = null;
 
+    async function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return 0;
+            } catch (e) {
+                return 1;
+            }
+        }
+
+        let exitCode = 3;
+
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+
+        try {
+            if (document.execCommand("copy")) {
+                exitCode = 0;
+            } else {
+                exitCode = 2;
+            }
+        } catch (e) {
+            exitCode = 2;
+        }
+
+        document.body.removeChild(temp);
+        return exitCode;
+    }
+
     function initAppsTable() {
         if (apps_table) return;
 
         apps_table = $('#apps_table').DataTable({
             processing: true,
             responsive: true,
+            order: [[0,'desc']],
             ajax: "{{ route('api.private.apps.registrations') }}",
             columns: [
                 { data: 'id' },
@@ -64,10 +104,10 @@
                 {
                     data: 'ids',
                     render: function(data, type, row) {
-                        let url = `https://license.192.168.10.22.nip.io/apps/${data[0]}`;
+                        let url = `#`;
                         return `
-                        <button type="button" class="btn btn-outline-dark btn-sm copy-trigger" data-copy="${data[1]}" data-name="${data[2]}"><i class="bi bi-clipboard"></i></button>
-                        <a href='${url}' class="btn btn-outline-dark btn-sm"><i class="bi bi-pencil-square"></i></a>
+                        <button type="button" class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200 cursor-pointer copy-trigger" data-copy="${data[1]}" data-name="${data[2]}"><i class="bi bi-clipboard"></i></button>
+                        <a href='${url}' class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200"><i class="bi bi-pencil-square"></i></a>
                         `;
                     }
                 },
@@ -100,9 +140,100 @@
         }
     }
 
+    function createApp() {
+        Swal.fire({
+            title: 'Create App',
+            html: `
+                <input type="text" id="appName" class="swal2-input" placeholder="App Name">
+                <select id="appStatus" class="swal2-input">
+                    <option value="">-- Select Status --</option>
+                    <option value="Active" selected>Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <input type="number" id="appPrice" class="swal2-input" placeholder="Price">
+            `,
+            confirmButtonText: 'Create',
+            focusConfirm: false,
+            preConfirm: () => {
+                const name = document.getElementById('appName').value.trim();
+                const status = document.getElementById('appStatus').value;
+                const price = document.getElementById('appPrice').value;
+
+                if (!name) {
+                    Swal.showValidationMessage('App Name is required');
+                    return false;
+                }
+                if (!status) {
+                    Swal.showValidationMessage('Status must be selected');
+                    return false;
+                }
+                if (!price) {
+                    Swal.showValidationMessage('Price is required');
+                    return false;
+                }
+
+                return { name, status, price };
+            }
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            $.ajax({
+                url: "{{ route('api.private.apps.register') }}",
+                method: 'POST',
+                data: result.value,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                success: function(res) {
+                    window.showPopup('Success', 'App created successfully!');
+                    AppsTableReload();
+                },
+                error: function(err) {
+                    const message = err.responseJSON?.message || 'Something went wrong';
+                    window.showPopup('Error', message);
+                }
+            });
+        });
+    }
+
     $(document).ready(function () {
         $('#reloadBtnApps').on('click', () => {
             AppsTableReload();
+        });
+
+        $('#createBtnApps').on('click', () => {
+            createApp();
+        });
+
+        $(document).on('click', '.copy-trigger', async function() {
+            const copy = $(this).data('copy');
+            const name = $(this).data('name');
+
+            const code = await copyToClipboard(copy);
+
+            let message = "";
+            let icon = "error";
+
+            switch (code) {
+                case 0:
+                    message = `<b>App</b> ${name} <b>App's ID Successfully Copied</b>`;
+                    icon = "success";
+                    break;
+                case 1:
+                    message = "Clipboard API failed.";
+                    break;
+                case 2:
+                    message = "Fallback copy failed.";
+                    break;
+                case 3:
+                    message = "Clipboard API not available (HTTP or insecure context).";
+                    break;
+            }
+
+            Toast.fire({
+                html: message,
+                icon: icon,
+            });
         });
     });
 </script>
