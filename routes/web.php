@@ -33,8 +33,12 @@ Route::middleware('auth', 'session.timeout', 'no.cache')->group(function () {
 
     Route::prefix('API/private')->name('api.private.')->group(function () {
         Route::post('/home/licenses', [DashController::class, 'licensedata_10'])->withoutMiddleware(VerifyCsrfToken::class)->name('home.registrations');
-        Route::post('/apps/data', [AppController::class, 'appdata'])->withoutMiddleware(VerifyCsrfToken::class)->name('apps.registrations');
-        Route::post('/apps/register', [AppController::class, 'appregister'])->name('apps.register');
+        Route::prefix('apps')->name('apps.')->group(function () {
+            Route::post('/registrations', [AppController::class, 'appregistrations'])->withoutMiddleware(VerifyCsrfToken::class)->name('registrations');
+            Route::post('/data', [AppController::class, 'appdata'])->withoutMiddleware(VerifyCsrfToken::class)->name('data');
+            Route::post('/register', [AppController::class, 'appregister'])->name('register');
+            Route::post('/update', [AppController::class, 'appupdate'])->name('update');
+        });
     });
 });
 

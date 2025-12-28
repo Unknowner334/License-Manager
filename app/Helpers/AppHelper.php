@@ -45,43 +45,41 @@ class AppHelper
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
+        $app = App::where('edit_id', $request->input('edit_id'))->first();
+
+        if (empty($app)) {
+            return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
+        }
+
+        $request->validate([
+            'app_id'  => [
+                'required',
+                'string',
+                'min:10',
+                'max:36',
+                Rule::unique('apps', 'app_id')->ignore($app->edit_id, 'edit_id')
+            ],
+            'name'    => [
+                'required',
+                'string',
+                'min:6',
+                'max:50',
+                Rule::unique('apps', 'name')->ignore($app->edit_id, 'edit_id')
+            ],
+        ]);
+
         try {
-            $app = App::where('edit_id', $request->input('edit_id'))->first();
-
-            if (empty($app)) {
-                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
-            }
-
-            $request->validate([
-                'id'      => [
-                    'required',
-                    'string',
-                    'min:10',
-                    'max:36',
-                    Rule::unique('apps', 'app_id')->ignore($app->edit_id, 'edit_id')
-                ],
-                'name'    => [
-                    'required',
-                    'string',
-                    'min:6',
-                    'max:50',
-                    Rule::unique('apps', 'name')->ignore($app->edit_id, 'edit_id')
-                ],
-            ]);
-
             $app->update([
-                'app_id'      => $request->input('id'),
+                'app_id'      => $request->input('app_id'),
                 'name'        => $request->input('name'),
                 'price'       => $request->input('price'),
-                'ppd_basic'   => $request->input('basic'),
-                'ppd_premium' => $request->input('premium'),
                 'status'      => $request->input('status'),
             ]);
 
             AppHistory::create([
                 'app_id' => $app->edit_id,
                 'user'   => auth()->user()->user_id,
-                'type'   => 'Create',
+                'type'   => 'Update',
             ]);
 
             return response()->json([

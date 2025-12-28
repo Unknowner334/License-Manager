@@ -8,10 +8,11 @@ use App\Models\AppHistory;
 use App\Helpers\AppHelper;
 use App\Http\Requests\AppGenerateRequest;
 use App\Http\Requests\AppEditRequest;
+use App\Http\Requests\AppDataRequest;
 
 class AppController extends Controller
 {
-    public function appdata() {
+    public function appregistrations() {
         $apps = App::get();
 
         $data = $apps->map(function ($app) {
@@ -53,6 +54,36 @@ class AppController extends Controller
         ]);
     }
 
+    public function appdata(AppDataRequest $request) {
+        $errorMessage = Config::get('messages.error.validation');
+        $request->validated();
+
+        $app = App::where('edit_id', $request->input('id'))->first();
+
+        try {
+            if (!$app) {
+                return response()->json([
+                    'status' => 1,
+                    'message' => str_replace(':info', 'Error Code 202', $errorMessage),
+                ]);
+            }
+
+            return response()->json([
+                'status' => 0,
+                'app_id' => $app->app_id,
+                'app_name' => $app->name,
+                'app_status' => $app->status,
+                'price' => $app->price,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 1,
+                'message' => str_replace(':info', 'Error Code 201', $errorMessage),
+            ]);
+        }
+        
+    }
+
     public function appregister(AppGenerateRequest $request) {
         require_ownership(1, 0, 1);
 
@@ -61,7 +92,7 @@ class AppController extends Controller
         return AppHelper::appGenerate($request);
     }
 
-    public function appedit(AppEditRequest $request) {
+    public function appupdate(AppEditRequest $request) {
         $request->validated();
 
         return AppHelper::appEdit($request);

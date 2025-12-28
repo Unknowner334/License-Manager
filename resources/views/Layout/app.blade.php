@@ -13,7 +13,6 @@
     @vite('resources/css/app.css')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     @auth
-
         <link rel="stylesheet" href="https://cdn.datatables.net/2.3.6/css/dataTables.tailwindcss.css">
         <script src="https://cdn.datatables.net/2.3.6/js/dataTables.js"></script>
         <script src="https://cdn.datatables.net/2.3.6/js/dataTables.tailwindcss.js"></script>

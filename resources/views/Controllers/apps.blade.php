@@ -114,7 +114,7 @@
                     render: function(data, type, row) {
                         return `
                         <button type="button" class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200 cursor-pointer copy-trigger" data-copy="${data[1]}" data-name="${data[2]}"><i class="bi bi-clipboard"></i></button>
-                        <button type="button" class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200 cursor-pointer" id="editAppBtn" data-app="${data[0]}"><i class="bi bi-pencil-square"></i></button>
+                        <button type="button" class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200 cursor-pointer" id="editBtnApps" data-app="${data[0]}"><i class="bi bi-pencil-square"></i></button>
                         `;
                     }
                 },
@@ -192,8 +192,12 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 success: function(res) {
-                    window.showPopup('Success', 'App created successfully!');
-                    AppsTableReload();
+                    if (res.status == 0) {
+                        window.showPopup('Success', 'App created successfully!');
+                        AppsTableReload();
+                    } else {
+                        window.showPopup('Error', res.message);
+                    }
                 },
                 error: function(err) {
                     const message = err.responseJSON?.message || 'Something went wrong';
@@ -203,6 +207,100 @@
         });
     }
 
+    function updateAppForm(id, app_id, app_name, app_status, app_price) {
+        Swal.fire({
+            title: 'Update App',
+            html: `
+                <input type="hidden" id="editId" value="${id}">
+                <input type="text" id="appId" class="swal2-input" placeholder="App ID" value="${app_id}">
+                <input type="text" id="appName" class="swal2-input" placeholder="App Name" value="${app_name}">
+                <select id="appStatus" class="swal2-input">
+                    <option value="">-- Select Status --</option>
+                    <option value="Active" ${app_status === 'Active' ? 'selected' : ''}>Active</option>
+                    <option value="Inactive" ${app_status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                </select>
+                <input type="number" id="appPrice" class="swal2-input" placeholder="Price" value="${app_price}">
+            `,
+            confirmButtonText: 'Update',
+            focusConfirm: false,
+            preConfirm: () => {
+                const edit_id = document.getElementById('editId').value;
+                const app_id = document.getElementById('appId').value.trim();
+                const name = document.getElementById('appName').value.trim();
+                const status = document.getElementById('appStatus').value;
+                const price = document.getElementById('appPrice').value;
+
+                if (!edit_id) {
+                    Swal.showValidationMessage('Edit ID is required');
+                    return false;
+                }
+                if (!app_id) {
+                    Swal.showValidationMessage('App ID is required');
+                    return false;
+                }
+                if (!name) {
+                    Swal.showValidationMessage('App Name is required');
+                    return false;
+                }
+                if (!status) {
+                    Swal.showValidationMessage('Status must be selected');
+                    return false;
+                }
+                if (!price) {
+                    Swal.showValidationMessage('Price is required');
+                    return false;
+                }
+
+                return { edit_id, app_id, name, status, price };
+            }
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            $.ajax({
+                url: "{{ route('api.private.apps.update') }}",
+                method: 'POST',
+                data: result.value,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                success: function(res) {
+                    if (res.status == 0) {
+                        window.showPopup('Success', 'App updated successfully!');
+                        AppsTableReload();
+                    } else {
+                        window.showPopup('Error', res.message);
+                    }
+                },
+                error: function(err) {
+                    const message = err.responseJSON?.message || 'Something went wrong';
+                    window.showPopup('Error', message);
+                }
+            });
+        });
+    };
+
+    function updateApp(id) {
+        $.ajax({
+            url: "{{ route('api.private.apps.data') }}",
+            method: 'POST',
+            data: { id: id },
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            success: function(res) {
+                if (res.status == 0) {
+                    updateAppForm(id, res.app_id, res.app_name, res.app_status, res.price);
+                } else {
+                    window.showPopup('Error', res.message);
+                }
+            },
+            error: function(err) {
+                const message = err.responseJSON?.message || 'Something went wrong';
+                window.showPopup('Error', message);
+            }
+        });
+    };
+
     $(document).ready(function () {
         $('#reloadBtnApps').on('click', () => {
             AppsTableReload();
@@ -210,6 +308,11 @@
 
         $('#createBtnApps').on('click', () => {
             createApp();
+        });
+
+        $(document).on('click', '#editBtnApps', async function() {
+            const id = $(this).data('app');
+            updateApp(id);
         });
 
         $(document).on('click', '.copy-trigger', async function() {

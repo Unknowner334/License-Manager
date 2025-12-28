@@ -8,7 +8,7 @@ class AppEditRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return require_ownership(1, 1, 1);;
+        return require_ownership(1, 1, 1);
     }
 
     public function rules(): array
