@@ -7,12 +7,7 @@
             x-data="{ forgot: JSON.parse(sessionStorage.getItem('forgotYourPassword') || 'false') }"
             x-init="$watch('forgot', value => sessionStorage.setItem('forgotYourPassword', value))">
         <div x-show="!forgot" x-cloak>
-            <div class="w-full max-w-xs bg-dark rounded-t shadow px-5 py-2 text-center">
-                <h1 class="text-lg text-white">
-                    Login
-                </h1>
-            </div>
-            <div class="w-full max-w-xs bg-white rounded-b shadow p-5">
+            <x-card title="Login" class="w-full max-w-xs">
                 <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                     @csrf
                     @honeypot
@@ -81,7 +76,7 @@
                         </p>
                     </div>
                 </form>
-            </div>
+            </x-card>
         </div>
 
         <div x-show="!forgot" x-cloak>
@@ -95,12 +90,7 @@
         </div>
 
         <div x-show="forgot" x-cloak>
-            <div class="w-full max-w-xs bg-dark rounded-t shadow px-5 py-2 text-center">
-                <h1 class="text-lg text-white">
-                    Forgot your password?
-                </h1>
-            </div>
-            <div class="w-full max-w-xs bg-white rounded-b shadow p-5">
+            <x-card title="Forgot Your Password?" class="w-full max-w-xs">
                 <form action="{{ route('login.forgot') }}" method="POST" class="space-y-4" id="forgotPasswordForm">
                     @csrf
                     @honeypot
@@ -121,7 +111,7 @@
                         <i class="bi bi-check2-circle"></i> Submit
                     </button>
                 </form>
-            </div>
+            </x-card>
         </div>
 
         <div x-show="forgot" x-cloak>

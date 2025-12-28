@@ -1,52 +1,51 @@
 <section class="flex flex-col lg:flex-row gap-4 w-full items-stretch">
     <div class="flex flex-col min-w-0 lg:flex-3">
-        <div class="bg-dark rounded-t shadow px-5 py-2 flex justify-between items-center">
-            <h1 class="text-sm lg:text-md text-white mb-0">
-                Licenses Registrations History
-            </h1>
-            <button id="reloadBtnDashboard" 
-                    class="bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
-                    rounded shadow transition duration-200 flex items-center gap-2">
-                <i class="bi bi-arrow-clockwise"></i>
-                Refresh
-            </button>
-        </div>
+        @php
+            $homeLicenseTitle="
+            <div class='flex justify-between items-center'>
+                Registrations History
 
-        <div class="overflow-auto relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 bg-white rounded-b shadow p-5">
-            <table class="w-full min-w-full divide-y divide-gray-200" id="licenses_table">
-                <thead class="bg-gray-50">
-                    <tr class="border border-gray-200">
-                        <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
-                            #
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
-                            User License
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
-                            Duration
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
-                            Registrar
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
-                            Devices
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
-                            Created
-                        </th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
+                <button id='reloadBtnDashboard'
+                        class='bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
+                        rounded shadow transition duration-200 flex items-center gap-2 text-[14px]'>
+                    <i class='bi bi-arrow-clockwise'></i>
+                    Refresh
+                </button>
+            </div>
+            ";
+        @endphp
+        <x-card title="{!! $homeLicenseTitle !!}">
+            <div class="overflow-auto relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+                <table class="w-full min-w-full divide-y divide-gray-200" id="licenses_table">
+                    <thead class="bg-gray-50">
+                        <tr class="border border-gray-200">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
+                                #
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
+                                User License
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
+                                Duration
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
+                                Registrar
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
+                                Devices
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-dark-text uppercase tracking-wider">
+                                Created
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </x-card>
     </div>
 
     <div class="flex flex-col min-w-0 lg:flex-2 xl:flex-1">
-        <div class="bg-dark rounded-t shadow px-5 py-2.75 flex justify-between items-center">
-            <h1 class="text-center text-sm lg:text-md text-white mb-0">
-                Information
-            </h1>
-        </div>
-        <div class="bg-white rounded-b shadow p-5">
+        <x-card title="Information" class="w-full max-w-xs">
             <ul class="mb-2">
                 <li class="bg-white hover:bg-gray-200 rounded-t px-5 py-2 flex justify-between align-middle border border-gray-200">
                     Name
@@ -72,7 +71,7 @@
                     <span id="expiry-timer" class="text-sm text-dark-text" data-expiry="{{ $expiryTime }}"></span>
                 </li>
             </ul>
-        </div>
+        </x-card>
     </div>
 </section>
 
@@ -90,7 +89,11 @@
             searching: false,
             lengthChange: false,
             deferLoading: 0,
-            ajax: "{{ route('api.private.home.registrations') }}",
+            order: [[0,'desc']],
+            ajax: {
+                url: "{{ route('api.private.home.registrations') }}",
+                method: "POST",
+            },
             columns: [
                 { data: 'id' },
                 { data: 'user_key' },

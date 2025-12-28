@@ -5,12 +5,7 @@
 @section('content')
     <main class="flex-1 flex flex-col items-center mt-15 gap-4">
         <div>
-            <div class="w-full max-w-xs bg-dark rounded-t shadow px-5 py-2 text-center">
-                <h1 class="text-lg text-white">
-                    Register
-                </h1>
-            </div>
-            <div class="w-full max-w-xs bg-white rounded-b shadow p-5">
+            <x-card title="Register" class="w-full max-w-xs">
                 <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                     @csrf
                     @honeypot
@@ -107,7 +102,7 @@
                         </button>
                     </div>
                 </form>
-            </div>
+            </x-card>
         </div>
 
         <div>

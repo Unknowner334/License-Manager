@@ -1,54 +1,58 @@
 <section class="flex flex-col lg:flex-row gap-4 w-full items-stretch lg:justify-center lg:items-center">
     <div class="flex flex-col min-w-0 lg:w-[95%]">
-        <div class="bg-dark rounded-t shadow px-5 py-2 flex justify-between items-center">
-            <h1 class="text-md text-white mb-0">
+        @php
+            $appsTitle="
+            <div class='flex justify-between items-center'>
                 Apps Registered
-            </h1>
-            <div class="flex gap-2">
-                <button id="reloadBtnApps" 
-                        class="bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
-                        rounded shadow transition duration-200 flex items-center gap-2">
-                    <i class="bi bi-arrow-clockwise"></i>
-                    Refresh
-                </button>
-                <button id="createBtnApps" 
-                        class="bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
-                        rounded shadow transition duration-200 flex items-center gap-2">
-                    <i class="bi bi-terminal"></i>
-                    App
-                </button>
-            </div>
-        </div>
 
-        <div class="overflow-auto relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 bg-white rounded-b shadow p-5">
-            <table class="w-full min-w-full divide-y divide-gray-200" id="apps_table">
-                <thead class="bg-gray-50">
-                    <tr class="border border-gray-200">
-                        <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
-                            #
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
-                            Name
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
-                            Price
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
-                            Licenses
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
-                            Created
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
-                            Registrar
-                        </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
+                <div class='flex gap-2'>
+                    <button id='reloadBtnApps' 
+                            class='bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
+                            rounded shadow transition duration-200 flex items-center gap-2 text-[14px]'>
+                        <i class='bi bi-arrow-clockwise'></i>
+                        Refresh
+                    </button>
+                    <button id='createBtnApps'
+                            class='bg-transparent text-white border border-white hover:border-transparent hover:bg-primary uppercase px-2 py-1 
+                            rounded shadow transition duration-200 flex items-center gap-2 text-[14px]'>
+                        <i class='bi bi-terminal'></i>
+                        App
+                    </button>
+                </div>
+            </div>
+            ";
+        @endphp
+        <x-card title="{!! $appsTitle !!}">
+            <div class="overflow-auto relative scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+                <table class="w-full min-w-full divide-y divide-gray-200" id="apps_table">
+                    <thead class="bg-gray-50">
+                        <tr class="border border-gray-200">
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                #
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Price
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Licenses
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Created
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Registrar
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </x-card>
     </div>
 </section>
 
@@ -92,8 +96,12 @@
         apps_table = $('#apps_table').DataTable({
             processing: true,
             responsive: true,
+            deferLoading: 0,
             order: [[0,'desc']],
-            ajax: "{{ route('api.private.apps.registrations') }}",
+            ajax: {
+                url: "{{ route('api.private.apps.registrations') }}",
+                method: "POST",
+            },
             columns: [
                 { data: 'id' },
                 { data: 'name' },
@@ -104,10 +112,9 @@
                 {
                     data: 'ids',
                     render: function(data, type, row) {
-                        let url = `#`;
                         return `
                         <button type="button" class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200 cursor-pointer copy-trigger" data-copy="${data[1]}" data-name="${data[2]}"><i class="bi bi-clipboard"></i></button>
-                        <a href='${url}' class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200"><i class="bi bi-pencil-square"></i></a>
+                        <button type="button" class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200 cursor-pointer" id="editAppBtn" data-app="${data[0]}"><i class="bi bi-pencil-square"></i></button>
                         `;
                     }
                 },
