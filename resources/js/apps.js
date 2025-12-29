@@ -1,36 +1,5 @@
 let apps_table = null;
 
-async function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-        try {
-            await navigator.clipboard.writeText(text);
-            return 0;
-        } catch (e) {
-            return 1;
-        }
-    }
-
-    let exitCode = 3;
-
-    const temp = document.createElement("textarea");
-    temp.value = text;
-    document.body.appendChild(temp);
-    temp.select();
-
-    try {
-        if (document.execCommand("copy")) {
-            exitCode = 0;
-        } else {
-            exitCode = 2;
-        }
-    } catch (e) {
-        exitCode = 2;
-    }
-
-    document.body.removeChild(temp);
-    return exitCode;
-}
-
 window.initAppsTable = function () {
     if (apps_table) return;
 
@@ -56,6 +25,7 @@ window.initAppsTable = function () {
                     return `
                     <button type="button" class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200 cursor-pointer copy-app" data-copy="${data[1]}" data-name="${data[2]}"><i class="bi bi-clipboard"></i></button>
                     <button type="button" class="px-2 py-1 border border-dark rounded hover:bg-dark hover:text-white transition-colors duration-200 cursor-pointer" id="editBtnApps" data-app="${data[0]}"><i class="bi bi-pencil-square"></i></button>
+                    <button type="button" class="px-2 py-1 border border-red-600 text-red-600 rounded hover:bg-red-600 hover:text-white transition-colors duration-200 cursor-pointer" id="deleteBtnApps" data-app="${data[0]}" data-name="${data[2]}"><i class="bi bi-trash"></i></button>
                     `;
                 }
             },
@@ -101,6 +71,8 @@ window.createApp = function () {
             <input type="number" id="appPrice" class="swal2-input" placeholder="Price">
         `,
         confirmButtonText: 'Create',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
         focusConfirm: false,
         preConfirm: () => {
             const name = document.getElementById('appName').value.trim();
@@ -124,17 +96,21 @@ window.createApp = function () {
         }
     }).then((result) => {
         if (!result.isConfirmed) return;
+        Toast.fire({
+            icon: 'info',
+            html: 'Processing...',
+        });
 
         $.ajax({
             url: window.APP.routes.appRegister,
             method: 'POST',
             data: result.value,
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': window.APP.csrf
             },
             success: function(res) {
                 if (res.status == 0) {
-                    window.showPopup('Success', 'App created successfully!');
+                    window.showPopup('Success', res.message);
                     AppsTableReload();
                 } else {
                     window.showPopup('Error', res.message);
@@ -163,6 +139,8 @@ window.updateAppForm = function (id, app_id, app_name, app_status, app_price) {
             <input type="number" id="appPrice" class="swal2-input" placeholder="Price" value="${app_price}">
         `,
         confirmButtonText: 'Update',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
         focusConfirm: false,
         preConfirm: () => {
             const edit_id = document.getElementById('editId').value;
@@ -196,6 +174,10 @@ window.updateAppForm = function (id, app_id, app_name, app_status, app_price) {
         }
     }).then((result) => {
         if (!result.isConfirmed) return;
+        Toast.fire({
+            icon: 'info',
+            html: 'Processing...',
+        });
 
         $.ajax({
             url: window.APP.routes.appUpdate,
@@ -206,7 +188,7 @@ window.updateAppForm = function (id, app_id, app_name, app_status, app_price) {
             },
             success: function(res) {
                 if (res.status == 0) {
-                    window.showPopup('Success', 'App updated successfully!');
+                    window.showPopup('Success', res.message);
                     AppsTableReload();
                 } else {
                     window.showPopup('Error', res.message);
@@ -225,9 +207,6 @@ window.updateApp = function (id) {
         url: window.APP.routes.appData,
         method: 'POST',
         data: { id: id },
-        headers: {
-            'X-CSRF-TOKEN': window.APP.csrf
-        },
         success: function(res) {
             if (res.status == 0) {
                 updateAppForm(id, res.app_id, res.app_name, res.app_status, res.price);
@@ -239,6 +218,45 @@ window.updateApp = function (id) {
             const message = err.responseJSON?.message || 'Something went wrong';
             window.showPopup('Error', message);
         }
+    });
+};
+
+window.deleteApp = function (id, name) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Delete App',
+        html: `Are you sure you want to delete app <b>${name}</b>?`,
+        confirmButtonText: 'Delete',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        focusConfirm: false,
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+        Toast.fire({
+            icon: 'info',
+            html: 'Processing...',
+        });
+
+        $.ajax({
+            url: window.APP.routes.appDelete,
+            method: 'POST',
+            data: { edit_id: id },
+            headers: {
+                'X-CSRF-TOKEN': window.APP.csrf
+            },
+            success: function(res) {
+                if (res.status == 0) {
+                    window.showPopup('Success', res.message);
+                    AppsTableReload();
+                } else {
+                    window.showPopup('Error', res.message);
+                }
+            },
+            error: function(err) {
+                const message = err.responseJSON?.message || 'Something went wrong';
+                window.showPopup('Error', message);
+            }
+        });
     });
 };
 
@@ -254,6 +272,12 @@ $(document).ready(function () {
     $(document).on('click', '#editBtnApps', async function() {
         const id = $(this).data('app');
         updateApp(id);
+    });
+
+    $(document).on('click', '#deleteBtnApps', async function() {
+        const id = $(this).data('app');
+        const name = $(this).data('name');
+        deleteApp(id, name);
     });
 
     $(document).on('click', '.copy-app', async function() {

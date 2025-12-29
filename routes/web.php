@@ -43,6 +43,7 @@ Route::middleware('auth', 'session.timeout', 'no.cache')->group(function () {
             Route::post('/data', [AppController::class, 'appdata'])->withoutMiddleware(VerifyCsrfToken::class)->name('data');
             Route::post('/register', [AppController::class, 'appregister'])->name('register');
             Route::post('/update', [AppController::class, 'appupdate'])->name('update');
+            Route::post('/delete', [AppController::class, 'appdelete'])->name('delete');
         });
     });
 });

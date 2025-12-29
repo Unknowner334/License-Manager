@@ -16,7 +16,7 @@ use Carbon\Carbon;
 class LicenseController extends Controller
 {
     public function licenseregistrations() {
-        if (require_ownership(1, 0)) {
+        if (require_ownership(1, 0, 1)) {
             $licenses = License::get();
         } else {
             $licenses = License::where('registrar', auth()->user()->user_id)->get();
@@ -47,7 +47,7 @@ class LicenseController extends Controller
                 'edit_id'   => $license->edit_id,
                 'owner'     => $owner,
                 'app'       => $license->app->name,
-                'user_key'  => "<span class='text-$licenseStatus blur Blur copy-trigger' data-copy='$license->license'>$license->license</span>",
+                'user_key'  => "<span class='text-$licenseStatus blur Blur copy-license' data-copy='$license->license'>$license->license</span>",
                 'devices'   => "<span class='text-white bg-dark'>$devices</span>",
                 'duration'  => "<span class='text-$durationC'>$duration</span>",
                 'registrar' => userUsername($license->registrar),

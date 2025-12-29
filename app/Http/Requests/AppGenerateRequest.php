@@ -8,7 +8,7 @@ class AppGenerateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return require_ownership(1, 0, 1);
     }
 
     public function rules(): array

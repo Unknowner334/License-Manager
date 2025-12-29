@@ -1,6 +1,38 @@
 import './bootstrap';
 import './home';
 import './apps';
+import './licenses';
+
+window.copyToClipboard = async function (text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return 0;
+        } catch (e) {
+            return 1;
+        }
+    }
+
+    let exitCode = 3;
+
+    const temp = document.createElement("textarea");
+    temp.value = text;
+    document.body.appendChild(temp);
+    temp.select();
+
+    try {
+        if (document.execCommand("copy")) {
+            exitCode = 0;
+        } else {
+            exitCode = 2;
+        }
+    } catch (e) {
+        exitCode = 2;
+    }
+
+    document.body.removeChild(temp);
+    return exitCode;
+}
 
 $(document).ready(function () {
     document.addEventListener('contextmenu', event => event.preventDefault());

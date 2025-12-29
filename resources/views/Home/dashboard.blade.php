@@ -63,8 +63,10 @@
                 homeRegistrations: "{{ route('api.home.registrations') }}",
                 appRegistrations: "{{ route('api.apps.registrations') }}",
                 appData: "{{ route('api.apps.data') }}",
-                appRegister: "{{ route('api.apps.data') }}",
+                appRegister: "{{ route('api.apps.register') }}",
                 appUpdate: "{{ route('api.apps.update') }}",
+                appDelete: "{{ route('api.apps.delete') }}",
+                licenseRegistrations: "{{ route('api.licenses.registrations') }}",
             },
             csrf: "{{ csrf_token() }}"
         };

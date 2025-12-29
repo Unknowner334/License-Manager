@@ -9,6 +9,7 @@ use App\Helpers\AppHelper;
 use App\Http\Requests\AppGenerateRequest;
 use App\Http\Requests\AppEditRequest;
 use App\Http\Requests\AppDataRequest;
+use App\Http\Requests\AppDeleteRequest;
 
 class AppController extends Controller
 {
@@ -85,8 +86,6 @@ class AppController extends Controller
     }
 
     public function appregister(AppGenerateRequest $request) {
-        require_ownership(1, 0, 1);
-
         $request->validated();
 
         return AppHelper::appGenerate($request);
@@ -98,11 +97,9 @@ class AppController extends Controller
         return AppHelper::appEdit($request);
     }
 
-    public function appdelete(AppEditRequest $request) {
+    public function appdelete(AppDeleteRequest $request) {
         $successMessage = Config::get('messages.success.deleted');
         $errorMessage = Config::get('messages.error.validation');
-
-        require_ownership(1, 1, 1);
 
         $request->validated();
 
@@ -114,62 +111,6 @@ class AppController extends Controller
             return response()->json([
                 'status' => 0,
                 'message' => str_replace(':flag', "<b>App</b> " . $name, $successMessage),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 1,
-                'message' => str_replace(':info', 'Error Code 201', $errorMessage),
-            ]);
-        }
-    }
-
-    public function appdeletelicenses(AppEditRequest $request) {
-        $successMessage = Config::get('messages.success.deleted');
-        $errorMessage = Config::get('messages.error.validation');
-
-        require_ownership(1, 1, 1);
-
-        $request->validated();
-
-        try {
-            $app = App::where('edit_id', $request->input('edit_id'))->firstOrFail();
-            $name = $app->name;
-            $licenses = $app->licenses()->get();
-
-            foreach ($licenses as $license) {
-                $license->delete();
-            }
-
-            return response()->json([
-                'status' => 0,
-                'message' => str_replace(':flag', "<b>App</b> " . $name . "<b>'s Licenses</b>", $successMessage),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 1,
-                'message' => str_replace(':info', 'Error Code 201', $errorMessage),
-            ]);
-        }
-    }
-
-    public function appdeletelicensesme(AppEditRequest $request) {
-        $successMessage = Config::get('messages.success.deleted');
-        $errorMessage = Config::get('messages.error.validation');
-
-        $request->validated();
-
-        try {
-            $app = App::where('edit_id', $request->input('edit_id'))->firstOrFail();
-            $name = $app->name;
-            $licenses = $app->licenses()->where('registrar', auth()->user()->user_id)->get();
-
-            foreach ($licenses as $license) {
-                $license->delete();
-            }
-
-            return response()->json([
-                'status' => 0,
-                'message' => str_replace(':flag', "<b>App</b> " . $name . "<b>'s Licenses</b>", $successMessage),
             ]);
         } catch (\Exception $e) {
             return response()->json([
