@@ -67,9 +67,34 @@
                 appUpdate: "{{ route('api.apps.update') }}",
                 appDelete: "{{ route('api.apps.delete') }}",
                 licenseRegistrations: "{{ route('api.licenses.registrations') }}",
+                licenseData: "{{ route('api.licenses.data') }}",
+                licenseRegister: "{{ route('api.licenses.register') }}",
+                licenseUpdate: "{{ route('api.licenses.update') }}",
+                licenseDelete: "{{ route('api.licenses.delete') }}",
             },
             csrf: "{{ csrf_token() }}"
         };
+
+        function loadAppList() {
+            $.post(window.APP.routes.appRegistrations, {}, function(res) {
+                if (res.status === 0 && res.data.length) {
+                    $('.appSelect').each(function() {
+                        const $select = $(this);
+                        $select.empty();
+                        $select.append(`<option value="">-- Select App --</option>`);
+                        
+                        res.data.forEach((app, index) => {
+                            const price = app.price;
+                            $select.append(`
+                                <option value="${app.app_id}" ${index === 0 ? 'selected' : ''}>
+                                    ${app.name} - ${price}
+                                </option>
+                            `);
+                        });
+                    });
+                }
+            });
+        }
 
         function LoadTable(page) {
             if (page === 'home') {

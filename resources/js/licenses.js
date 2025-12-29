@@ -60,9 +60,83 @@ window.LicensesTableReload = function () {
     }
 }
 
+window.createLicense = function () {
+    Swal.fire({
+        title: 'Create License',
+        html: `
+            <select id="app" class="swal2-input appSelect"></select>
+            <input type="text" id="owner" class="swal2-input" placeholder="Owner">
+            <select id="status" class="swal2-input">
+                <option value="">-- Select Status --</option>
+                <option value="Active" selected>Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+            <input type="number" id="devices" class="swal2-input" placeholder="Max Devices">
+        `,
+        confirmButtonText: 'Create',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        focusConfirm: false,
+        didOpen: () => {
+            loadAppList();
+        },
+        preConfirm: () => {
+            const name = document.getElementById('appName').value.trim();
+            const status = document.getElementById('appStatus').value;
+            const price = document.getElementById('appPrice').value;
+
+            if (!name) {
+                Swal.showValidationMessage('App Name is required');
+                return false;
+            }
+            if (!status) {
+                Swal.showValidationMessage('Status must be selected');
+                return false;
+            }
+            if (!price) {
+                Swal.showValidationMessage('Price is required');
+                return false;
+            }
+
+            return { name, status, price };
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+        Toast.fire({
+            icon: 'info',
+            html: 'Processing...',
+        });
+
+        $.ajax({
+            url: window.APP.routes.licenseRegister,
+            method: 'POST',
+            data: result.value,
+            headers: {
+                'X-CSRF-TOKEN': window.APP.csrf
+            },
+            success: function(res) {
+                if (res.status == 0) {
+                    window.showPopup('Success', res.message);
+                    AppsTableReload();
+                } else {
+                    window.showPopup('Error', res.message);
+                }
+            },
+            error: function(err) {
+                const message = err.responseJSON?.message || 'Something went wrong';
+                window.showPopup('Error', message);
+            }
+        });
+    });
+}
+
 $(document).ready(function () {
     $('#reloadBtnLicenses').on('click', function () {
         LicensesTableReload();
+    });
+    
+    $('#createBtnLicenses').on('click', () => {
+        createLicense();
     });
 
     $("#blur-out").click(function() {
@@ -103,5 +177,5 @@ $(document).ready(function () {
             html: message,
             icon: type,
         });
-        });
     });
+});

@@ -15,7 +15,8 @@ module.exports = {
         primary: '#0d6efd',
         secondary: {
           DEFAULT: '#6c757d',
-          light: 'rgb(226, 227, 229)',
+          lighter: 'rgb(226, 227, 229)',
+          darker: '#55595c',
         },
         dark: {
           DEFAULT: 'oklch(27.4% 0.006 286.033)',

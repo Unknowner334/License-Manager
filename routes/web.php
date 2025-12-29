@@ -36,6 +36,10 @@ Route::middleware('auth', 'session.timeout', 'no.cache')->group(function () {
 
         Route::prefix('licenses')->name('licenses.')->group(function () {
             Route::post('/registrations', [LicenseController::class, 'licenseregistrations'])->withoutMiddleware(VerifyCsrfToken::class)->name('registrations');
+            Route::post('/data', [LicenseController::class, 'licensedata'])->withoutMiddleware(VerifyCsrfToken::class)->name('data');
+            Route::post('/register', [LicenseController::class, 'licenseregister'])->name('register');
+            Route::post('/update', [LicenseController::class, 'licenseupdate'])->name('update');
+            Route::post('/delete', [LicenseController::class, 'licensedelete'])->name('delete');
         });
 
         Route::prefix('apps')->name('apps.')->group(function () {

@@ -18,6 +18,11 @@
                         <i class='bi bi-key'></i>
                         License
                     </button>
+                    <button id='blur-out' title='Eye Protect'
+                            class='bg-secondary text-white hover:bg-secondary-darker uppercase px-2 py-1 
+                            rounded shadow transition duration-200 flex items-center gap-2 text-[14px]'>
+                        <i class='bi bi-eye-slash'></i>
+                    </button>
                 </div>
             </div>
             ";
