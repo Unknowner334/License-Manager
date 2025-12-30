@@ -76,23 +76,31 @@
         };
 
         function loadAppList() {
-            $.post(window.APP.routes.appRegistrations, {}, function(res) {
-                if (res.status === 0 && res.data.length) {
-                    $('.appSelect').each(function() {
-                        const $select = $(this);
-                        $select.empty();
-                        $select.append(`<option value="">-- Select App --</option>`);
-                        
-                        res.data.forEach((app, index) => {
-                            const price = app.price;
-                            $select.append(`
-                                <option value="${app.ids[1]}" ${index === 0 ? 'selected' : ''}>
-                                    ${app.ids[2]} - ${price}
-                                </option>
-                            `);
-                        });
+            $.post(window.APP.routes.appRegistrations, {}, function (res) {
+                if (res.status !== 0 || !res.data.length) return;
+
+                $('.appSelect').each(function () {
+                    const select = $(this);
+                    const filled = select.data('filled');
+                    select.empty();
+                    select.append(`<option value="">-- Select App --</option>`);
+
+                    res.data.forEach((app, index) => {
+                        const value = app.ids[1];
+                        const price = app.price;
+
+                        const selected =
+                            filled !== undefined
+                                ? filled === value
+                                : index === 0;
+
+                        select.append(`
+                            <option value="${value}" ${selected ? 'selected' : ''}>
+                                ${app.ids[2]} - ${price}
+                            </option>
+                        `);
                     });
-                }
+                });
             });
         }
         
@@ -105,12 +113,19 @@
 
             $('.durationSelect').each(function () {
                 const select = $(this);
+                const filled = select.data('filled');
                 select.empty();
                 select.append(`<option value="">-- Select Duration --</option>`);
 
-                durations.forEach(function (duration, idx) {
+                durations.forEach((duration, index) => {
                     duration = duration * 30;
-                    select.append(`<option value="${duration}" ${idx === 0 ? 'selected' : ''}>${duration} Days, ${duration/30} Months</option>`);
+
+                    const selected =
+                        filled !== undefined
+                            ? filled === duration
+                            : index === 0;
+
+                    select.append(`<option value="${duration}" ${selected ? 'selected' : ''}>${duration} Days, ${duration/30} Months</option>`);
                 });
             });
         }

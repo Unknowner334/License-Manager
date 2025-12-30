@@ -35,11 +35,11 @@ class DashController extends Controller
 
             return [
                 'id'        => "<span class='text-dark-text'>#$license->id</span>",
-                'user_key'  => "<span class='text-dark-text'>$licenseName</span>",
-                'duration'  => "<span class='text-dark-text'>$license->duration Days</span>",
+                'user_key'  => "<span class='text-[16px] text-dark-text'>$licenseName</span>",
+                'duration'  => "<span class='text-[14px] text-dark-text'>$license->duration Days</span>",
                 'devices'   => "<span class='text-primary'>$license->max_devices Devices</span>",
                 'registrar' => "<span class='text-primary'>$registrar</span>",
-                'created'   => "<i class='text-gray-400'>$created</span>",
+                'created'   => "<i class='text-gray-500'>$created</span>",
             ];
         });
 

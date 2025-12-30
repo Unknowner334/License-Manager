@@ -138,6 +138,111 @@ window.createLicense = function () {
     });
 }
 
+window.updateLicenseForm = function (id, owner, app, license, status, duration, devices) {
+    Swal.fire({
+        title: 'Update License',
+        html: `
+        <input type="hidden" id="editId" value="${id}">
+            <select id="app" class="swal2-input appSelect" data-filled="${app}"></select>
+            <input type="text" id="license" class="swal2-input" placeholder="License (leave empty for random)" value="${license}">
+            <input type="text" id="owner" class="swal2-input" placeholder="Owner" value="${owner}">
+            <select id="status" class="swal2-input">
+                <option value="">-- Select Status --</option>
+                <option value="Active" ${status === 'Active' ? 'selected' : ''}>Active</option>
+                <option value="Inactive" ${status === 'Active' ? 'selected' : ''}>Inactive</option>
+            </select>
+            <select id="duration" class="swal2-input durationSelect" data-filled="${duration}"></select>
+            <input type="number" id="devices" class="swal2-input" placeholder="Max Devices" value='${devices}'>
+        `,
+        confirmButtonText: 'Update',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        focusConfirm: false,
+        didOpen: () => {
+            loadAppList();
+            loadDurationList();
+        },
+        preConfirm: () => {
+            const edit_id = document.getElementById('editId').value;
+            const app = document.getElementById('app').value;
+            const license = document.getElementById('license').value.trim();
+            const owner = document.getElementById('owner').value.trim();
+            const status = document.getElementById('status').value;
+            const duration = document.getElementById('duration').value;
+            const devices = document.getElementById('devices').value;
+
+            if (!edit_id) {
+                Swal.showValidationMessage('Edit ID is required');
+                return false;
+            }
+            if (!app) {
+                Swal.showValidationMessage('App is required');
+                return false;
+            }
+            if (!status) {
+                Swal.showValidationMessage('Status must be selected');
+                return false;
+            }
+            if (!duration) {
+                Swal.showValidationMessage('Duration must be selected');
+                return false;
+            }
+            if (!devices) {
+                Swal.showValidationMessage('Devices are required');
+                return false;
+            }
+
+            return { edit_id, app, license, owner, status, duration, devices };
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+        Toast.fire({
+            icon: 'info',
+            html: 'Processing...',
+        });
+
+        $.ajax({
+            url: window.APP.routes.licenseUpdate,
+            method: 'POST',
+            data: result.value,
+            headers: {
+                'X-CSRF-TOKEN': window.APP.csrf
+            },
+            success: function(res) {
+                if (res.status == 0) {
+                    window.showPopup('Success', res.message);
+                    LicensesTableReload();
+                } else {
+                    window.showPopup('Error', res.message);
+                }
+            },
+            error: function(err) {
+                const message = err.responseJSON?.message || 'Something went wrong';
+                window.showPopup('Error', message);
+            }
+        });
+    });
+}
+
+window.updateLicense = function (id) {
+    $.ajax({
+        url: window.APP.routes.licenseData,
+        method: 'POST',
+        data: { id: id },
+        success: function(res) {
+            if (res.status == 0) {
+                updateLicenseForm(id, res.owner, res.app, res.user_license, res.license_status, res.duration, res.max_devices);
+            } else {
+                window.showPopup('Error', res.message);
+            }
+        },
+        error: function(err) {
+            const message = err.responseJSON?.message || 'Something went wrong';
+            window.showPopup('Error', message);
+        }
+    });
+};
+
 $(document).ready(function () {
     $('#reloadBtnLicenses').on('click', function () {
         LicensesTableReload();
@@ -145,6 +250,11 @@ $(document).ready(function () {
     
     $('#createBtnLicenses').on('click', () => {
         createLicense();
+    });
+
+    $(document).on('click', '#updateBtnLicenses', async function() {
+        const id = $(this).data('id');
+        updateLicense(id);
     });
 
     $("#blur-out").click(function() {

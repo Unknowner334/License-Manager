@@ -106,42 +106,42 @@ class LicenseHelper
         $successMessage = Config::get('messages.success.updated');
         $errorMessage = Config::get('messages.error.validation');
 
+        $id = $request->input('edit_id');
+
+        if (require_ownership(1, 0)) {
+            $license = License::where('edit_id', $request->input('edit_id'))->first();
+
+            if (empty($license)) {
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
+            }
+        } else {
+            $license = License::where('registrar', auth()->user()->user_id)->where('edit_id', $id)->first();
+
+            if (empty($license)) {
+                return back()->withErrors(['name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage),])->onlyInput('name');
+            }
+        }
+
+        if ($request->input('license') == '') {
+            do {
+                $licenseName = randomString();
+                $licenseExists = License::where('license', $licenseName)->exists();
+            } while ($licenseExists);
+        } else {
+            $licenseName = $request->input('license');
+
+            $request->validate([
+                'license' => [
+                    'required',
+                    'string',
+                    'min:6',
+                    'max:50',
+                    Rule::unique('licenses', 'license')->ignore($license->edit_id, 'edit_id')
+                ],
+            ]);
+        }
+
         try {
-            $id = $request->input('edit_id');
-
-            if (require_ownership(1, 0)) {
-                $license = License::where('edit_id', $request->input('edit_id'))->first();
-
-                if (empty($license)) {
-                    return back()->withErrors(['name' => str_replace(':info', 'Error Code 201', $errorMessage),])->onlyInput('name');
-                }
-            } else {
-                $license = License::where('registrar', auth()->user()->user_id)->where('edit_id', $id)->first();
-
-                if (empty($license)) {
-                    return back()->withErrors(['name' => str_replace(':info', 'Error Code 403, <b>Access Forbidden</b>', $errorMessage),])->onlyInput('name');
-                }
-            }
-
-            if ($request->input('license') == '') {
-                do {
-                    $licenseName = randomString();
-                    $licenseExists = License::where('license', $keyName)->exists();
-                } while ($licenseExists);
-            } else {
-                $licenseName = $request->input('license');
-
-                $request->validate([
-                    'license' => [
-                        'required',
-                        'string',
-                        'min:6',
-                        'max:50',
-                        Rule::unique('licenses', 'license')->ignore($license->edit_id, 'edit_id')
-                    ],
-                ]);
-            }
-
             $now = Carbon::now();
             $expire_date = $now->addDays((int) $request->input('duration'));
 

@@ -7,6 +7,7 @@ use App\Helpers\LicenseInfo;
 use App\Helpers\LicenseHelper;
 use App\Http\Requests\LicenseGenerateRequest;
 use App\Http\Requests\LicenseUpdateRequest;
+use App\Http\Requests\LicenseDataRequest;
 use App\Http\Requests\LicenseDeleteRequest;
 use App\Models\License;
 use App\Models\LicenseHistory;
@@ -60,6 +61,39 @@ class LicenseController extends Controller
             'status' => 0,
             'data'   => $data
         ]);
+    }
+
+    public function licensedata(LicenseDataRequest $request) {
+        $errorMessage = Config::get('messages.error.validation');
+        $request->validated();
+
+        $license = License::where('edit_id', $request->input('id'))->first();
+
+        try {
+            if (!$license) {
+                return response()->json([
+                    'status' => 1,
+                    'message' => str_replace(':info', 'Error Code 202', $errorMessage),
+                ]);
+            }
+
+            return response()->json([
+                'status' => 0,
+                'app' => $license->app->app_id,
+                'user_license' => $license->license,
+                'license_status' => $license->status,
+                'owner' => $license->owner,
+                'duration' => $license->duration,
+                'max_devices' => $license->max_devices,
+                'devices' => $license->devices,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 1,
+                'message' => str_replace(':info', 'Error Code 201', $errorMessage),
+            ]);
+        }
+        
     }
 
     public function licenseregister(LicenseGenerateRequest $request) {
