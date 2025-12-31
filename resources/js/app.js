@@ -1,6 +1,7 @@
 import './home';
 import './apps';
 import './licenses';
+import './users';
 
 window.copyToClipboard = async function (text) {
     if (navigator.clipboard && window.isSecureContext) {

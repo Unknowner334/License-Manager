@@ -8,6 +8,30 @@
                             <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
                                 #
                             </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Username
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Saldo
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Role
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Reff
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Registrar
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Created
+                            </th>
+                            <th class="px-6 py-3 text-left text-sm font-medium text-dark-text uppercase tracking-wider">
+                                Action
+                            </th>
                         </tr>
                     </thead>
                 </table>
